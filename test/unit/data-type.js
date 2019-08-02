@@ -85,3 +85,56 @@ exports.nanoSecondRounding = function(test) {
   }
   test.done();
 };
+
+exports.dateInputWithSlashSeparator = function(test) {
+  var type = TYPES.typeByName.Date;
+  for (const [value, expectedBuffer] of [
+    ['2015/06/18 23:59:59', Buffer.from('03163a0b', 'hex')],
+  ]) {
+    var buffer = new WritableTrackingBuffer(16);
+    type.writeParameterData(buffer, { value: value }, { useUTC: false }, () => {});
+
+    test.deepEqual(buffer.data, expectedBuffer);
+  }
+  test.done();
+};
+
+exports.dateTimeInputWithSlashSeparator = function(test) {
+  var type = TYPES.typeByName.DateTime;
+  for (var testSet of [
+    ['2015/06/20', 42173],
+  ]) {
+    var buffer = new WritableTrackingBuffer(16);
+    var parameter = { value: testSet[0] };
+    var expectedNoOfDays = testSet[1];
+    type.writeParameterData(buffer, parameter, { useUTC: false }, () => {});
+    test.strictEqual(buffer.buffer.readInt32LE(1), expectedNoOfDays);
+  }
+  test.done();
+};
+
+// Test if we passed in an invalid date input, the writeParameterData should throw a corresponding error
+exports.dateTypeWithErrorInput = function(test) {
+  const type = TYPES.typeByName.Date;
+  var buffer = new WritableTrackingBuffer(8);
+  var parameter = { value: 'wrongvalue' };
+  try {
+    type.writeParameterData(buffer, parameter, { useUTC: false }, () => {});
+  } catch (err) {
+    test.strictEqual(err.message, 'Invalid date.');
+  }
+  test.done();
+};
+
+// Test if we passed in an invalid date input, the writeParameterData should throw a corresponding error
+exports.dateTimeTypeWithErrorInput = function(test) {
+  const type = TYPES.typeByName.DateTime;
+  var buffer = new WritableTrackingBuffer(8);
+  var parameter = { value: 'wrongvalue' };
+  try {
+    type.writeParameterData(buffer, parameter, { useUTC: false }, () => {});
+  } catch (err) {
+    test.strictEqual(err.message, 'Invalid date.');
+  }
+  test.done();
+};
