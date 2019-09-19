@@ -1469,6 +1469,7 @@ class Connection extends EventEmitter {
 
     const error = request.error;
     if (error != null) {
+      console.log('-- execSql error!= null:  ', error)
       process.nextTick(() => {
         this.debug.log(error.message);
         request.callback(error);
