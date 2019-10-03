@@ -1,3 +1,5 @@
+import { Metadata } from './metadata-parser';
+
 const crypto = require('crypto');
 const os = require('os');
 // $FlowFixMe
@@ -46,8 +48,88 @@ const DEFAULT_TDS_VERSION = '7_4';
 const DEFAULT_LANGUAGE = 'us_english';
 const DEFAULT_DATEFORMAT = 'mdy';
 
+export type InternalConnectionOptions = {
+  camelCaseColumns: boolean,
+  columnNameReplacer?: (colName: string, index: number, metadata: Metadata) => string,
+  tdsVersion: string,
+  useColumnNames: boolean,
+  useUTC: boolean,
+};
+
+interface AuthOptions {
+  userName?: string | undefined,
+  password?: string | undefined,
+  domain?: string,
+  token?: string,
+  clientId?: string,
+  msiEndpoint?: string,
+  msiSecret?: string,
+}
+
+interface Authentication {
+  type: string,
+  options: AuthOptions,
+}
+
+interface ConfigOptions {
+abortTransactionOnError?: boolean,
+    appName?: string | undefined,
+    camelCaseColumns?: boolean,
+    cancelTimeout?: number,
+    columnNameReplacer?: (colName: string, index: number, metadata: Metadata) => string | undefined,
+    connectionRetryInterval?: number,
+    connectTimeout?: number,
+    connectionIsolationLevel?: number,
+    cryptoCredentialsDetails?: {},
+    database?: string | undefined,
+    datefirst?: number,
+    dateFormat?: string,
+    debug?: {
+      data: boolean,
+      packet: boolean,
+      payload: boolean,
+      token: boolean
+    },
+    enableAnsiNull?: boolean,
+    enableAnsiNullDefault?: boolean,
+    enableAnsiPadding?: boolean,
+    enableAnsiWarnings?: boolean,
+    enableArithAbort?: boolean,
+    enableConcatNullYieldsNull?: boolean,
+    enableCursorCloseOnCommit?: boolean | null,
+    enableImplicitTransactions?: boolean,
+    enableNumericRoundabort?: boolean,
+    enableQuotedIdentifier?: boolean,
+    encrypt?: boolean,
+    fallbackToDefaultDb?: boolean,
+    instanceName?: string | undefined,
+    isolationLevel?: number,
+    language?: string,
+    localAddress?: string | undefined,
+    maxRetriesOnTransientErrors?: number,
+    multiSubnetFailover?: boolean,
+    packetSize?: number,
+    port?: number,
+    readOnlyIntent?: boolean,
+    requestTimeout?: number,
+    rowCollectionOnDone?: boolean,
+    rowCollectionOnRequestCompletion?: boolean,
+    tdsVersion?: string,
+    textsize?: string,
+    trustServerCertificate?: boolean,
+    useColumnNames?: boolean,
+    useUTC?: boolean,
+    lowerCaseGuids?: boolean,
+}
+
+interface Configuration {
+  server: string,
+  authentication: Authentication,
+  options: Configuration,
+}
+
 class Connection extends EventEmitter {
-  constructor(config) {
+  constructor(config: Configuration) {
     super();
 
     if (typeof config !== 'object' || config === null) {
@@ -68,7 +150,7 @@ class Connection extends EventEmitter {
       }
 
       const type = config.authentication.type;
-      const options = config.authentication.options === undefined ? {} : config.authentication.options;
+      const options = config.authentication.options === undefined ? {} as AuthOptions: config.authentication.options;
 
       if (typeof type !== 'string') {
         throw new TypeError('The "config.authentication.type" property must be of type string.');
@@ -250,402 +332,405 @@ class Connection extends EventEmitter {
     };
 
     if (config.options) {
-      if (config.options.port && config.options.instanceName) {
-        throw new Error('Port and instanceName are mutually exclusive, but ' + config.options.port + ' and ' + config.options.instanceName + ' provided');
+
+      let options = config.options as ConfigOptions;
+
+      if (options.port && options.instanceName) {
+        throw new Error('Port and instanceName are mutually exclusive, but ' + options.port + ' and ' + options.instanceName + ' provided');
       }
 
-      if (config.options.abortTransactionOnError !== undefined) {
-        if (typeof config.options.abortTransactionOnError !== 'boolean' && config.options.abortTransactionOnError !== null) {
+      if (options.abortTransactionOnError !== undefined) {
+        if (typeof options.abortTransactionOnError !== 'boolean' && options.abortTransactionOnError !== null) {
           throw new TypeError('The "config.options.abortTransactionOnError" property must be of type string or null.');
         }
 
-        this.config.options.abortTransactionOnError = config.options.abortTransactionOnError;
+        this.config.options.abortTransactionOnError = options.abortTransactionOnError;
       }
 
-      if (config.options.appName !== undefined) {
-        if (typeof config.options.appName !== 'string') {
+      if (options.appName !== undefined) {
+        if (typeof options.appName !== 'string') {
           throw new TypeError('The "config.options.appName" property must be of type string.');
         }
 
-        this.config.options.appName = config.options.appName;
+        this.config.options.appName = options.appName;
       }
 
-      if (config.options.camelCaseColumns !== undefined) {
-        if (typeof config.options.camelCaseColumns !== 'boolean') {
+      if (options.camelCaseColumns !== undefined) {
+        if (typeof options.camelCaseColumns !== 'boolean') {
           throw new TypeError('The "config.options.camelCaseColumns" property must be of type boolean.');
         }
 
-        this.config.options.camelCaseColumns = config.options.camelCaseColumns;
+        this.config.options.camelCaseColumns = options.camelCaseColumns;
       }
 
-      if (config.options.cancelTimeout !== undefined) {
-        if (typeof config.options.cancelTimeout !== 'number') {
+      if (options.cancelTimeout !== undefined) {
+        if (typeof options.cancelTimeout !== 'number') {
           throw new TypeError('The "config.options.cancelTimeout" property must be of type number.');
         }
 
-        this.config.options.cancelTimeout = config.options.cancelTimeout;
+        this.config.options.cancelTimeout = options.cancelTimeout;
       }
 
-      if (config.options.columnNameReplacer) {
-        if (typeof config.options.columnNameReplacer !== 'function') {
+      if (options.columnNameReplacer) {
+        if (typeof options.columnNameReplacer !== 'function') {
           throw new TypeError('The "config.options.cancelTimeout" property must be of type function.');
         }
 
-        this.config.options.columnNameReplacer = config.options.columnNameReplacer;
+        this.config.options.columnNameReplacer = options.columnNameReplacer;
       }
 
-      if (config.options.connectTimeout !== undefined) {
-        if (typeof config.options.connectTimeout !== 'number') {
+      if (options.connectTimeout !== undefined) {
+        if (typeof options.connectTimeout !== 'number') {
           throw new TypeError('The "config.options.connectTimeout" property must be of type number.');
         }
 
-        this.config.options.connectTimeout = config.options.connectTimeout;
+        this.config.options.connectTimeout = options.connectTimeout;
       }
 
-      if (config.options.connectionIsolationLevel !== undefined) {
-        this.config.options.connectionIsolationLevel = config.options.connectionIsolationLevel;
+      if (options.connectionIsolationLevel !== undefined) {
+        this.config.options.connectionIsolationLevel = options.connectionIsolationLevel;
       }
 
-      if (config.options.connectTimeout !== undefined) {
-        if (typeof config.options.connectTimeout !== 'number') {
+      if (options.connectTimeout !== undefined) {
+        if (typeof options.connectTimeout !== 'number') {
           throw new TypeError('The "config.options.connectTimeout" property must be of type number.');
         }
 
-        this.config.options.connectTimeout = config.options.connectTimeout;
+        this.config.options.connectTimeout = options.connectTimeout;
       }
 
-      if (config.options.cryptoCredentialsDetails !== undefined) {
-        if (typeof config.options.cryptoCredentialsDetails !== 'object' || config.options.cryptoCredentialsDetails === null) {
+      if (options.cryptoCredentialsDetails !== undefined) {
+        if (typeof options.cryptoCredentialsDetails !== 'object' || options.cryptoCredentialsDetails === null) {
           throw new TypeError('The "config.options.cryptoCredentialsDetails" property must be of type Object.');
         }
 
-        this.config.options.cryptoCredentialsDetails = config.options.cryptoCredentialsDetails;
+        this.config.options.cryptoCredentialsDetails = options.cryptoCredentialsDetails;
       }
 
-      if (config.options.database !== undefined) {
-        if (typeof config.options.database !== 'string') {
+      if (options.database !== undefined) {
+        if (typeof options.database !== 'string') {
           throw new TypeError('The "config.options.database" property must be of type string.');
         }
 
-        this.config.options.database = config.options.database;
+        this.config.options.database = options.database;
       }
 
-      if (config.options.datefirst !== undefined) {
-        if (typeof config.options.datefirst !== 'number' && config.options.datefirst !== null) {
+      if (options.datefirst !== undefined) {
+        if (typeof options.datefirst !== 'number' && options.datefirst !== null) {
           throw new TypeError('The "config.options.datefirst" property must be of type number.');
         }
 
-        if (config.options.datefirst !== null && (config.options.datefirst < 1 || config.options.datefirst > 7)) {
+        if (options.datefirst !== null && (options.datefirst < 1 || options.datefirst > 7)) {
           throw new RangeError('The "config.options.datefirst" property must be >= 1 and <= 7');
         }
 
-        this.config.options.datefirst = config.options.datefirst;
+        this.config.options.datefirst = options.datefirst;
       }
 
-      if (config.options.dateFormat !== undefined) {
-        if (typeof config.options.dateFormat !== 'string' && config.options.dateFormat !== null) {
+      if (options.dateFormat !== undefined) {
+        if (typeof options.dateFormat !== 'string' && options.dateFormat !== null) {
           throw new TypeError('The "config.options.dateFormat" property must be of type string or null.');
         }
 
-        this.config.options.dateFormat = config.options.dateFormat;
+        this.config.options.dateFormat = options.dateFormat;
       }
 
-      if (config.options.debug) {
-        if (config.options.debug.data !== undefined) {
-          if (typeof config.options.debug.data !== 'boolean') {
+      if (options.debug) {
+        if (options.debug.data !== undefined) {
+          if (typeof options.debug.data !== 'boolean') {
             throw new TypeError('The "config.options.debug.data" property must be of type boolean.');
           }
 
-          this.config.options.debug.data = config.options.debug.data;
+          this.config.options.debug.data = options.debug.data;
         }
 
-        if (config.options.debug.packet !== undefined) {
-          if (typeof config.options.debug.packet !== 'boolean') {
+        if (options.debug.packet !== undefined) {
+          if (typeof options.debug.packet !== 'boolean') {
             throw new TypeError('The "config.options.debug.packet" property must be of type boolean.');
           }
 
-          this.config.options.debug.packet = config.options.debug.packet;
+          this.config.options.debug.packet = options.debug.packet;
         }
 
-        if (config.options.debug.payload !== undefined) {
-          if (typeof config.options.debug.payload !== 'boolean') {
+        if (options.debug.payload !== undefined) {
+          if (typeof options.debug.payload !== 'boolean') {
             throw new TypeError('The "config.options.debug.payload" property must be of type boolean.');
           }
 
-          this.config.options.debug.payload = config.options.debug.payload;
+          this.config.options.debug.payload = options.debug.payload;
         }
 
-        if (config.options.debug.token !== undefined) {
-          if (typeof config.options.debug.token !== 'boolean') {
+        if (options.debug.token !== undefined) {
+          if (typeof options.debug.token !== 'boolean') {
             throw new TypeError('The "config.options.debug.token" property must be of type boolean.');
           }
 
-          this.config.options.debug.token = config.options.debug.token;
+          this.config.options.debug.token = options.debug.token;
         }
       }
 
-      if (config.options.enableAnsiNull !== undefined) {
-        if (typeof config.options.enableAnsiNull !== 'boolean' && config.options.enableAnsiNull !== null) {
+      if (options.enableAnsiNull !== undefined) {
+        if (typeof options.enableAnsiNull !== 'boolean' && options.enableAnsiNull !== null) {
           throw new TypeError('The "config.options.enableAnsiNull" property must be of type boolean or null.');
         }
 
-        this.config.options.enableAnsiNull = config.options.enableAnsiNull;
+        this.config.options.enableAnsiNull = options.enableAnsiNull;
       }
 
-      if (config.options.enableAnsiNullDefault !== undefined) {
-        if (typeof config.options.enableAnsiNullDefault !== 'boolean' && config.options.enableAnsiNullDefault !== null) {
+      if (options.enableAnsiNullDefault !== undefined) {
+        if (typeof options.enableAnsiNullDefault !== 'boolean' && options.enableAnsiNullDefault !== null) {
           throw new TypeError('The "config.options.enableAnsiNullDefault" property must be of type boolean or null.');
         }
 
-        this.config.options.enableAnsiNullDefault = config.options.enableAnsiNullDefault;
+        this.config.options.enableAnsiNullDefault = options.enableAnsiNullDefault;
       }
 
-      if (config.options.enableAnsiPadding !== undefined) {
-        if (typeof config.options.enableAnsiPadding !== 'boolean' && config.options.enableAnsiPadding !== null) {
+      if (options.enableAnsiPadding !== undefined) {
+        if (typeof options.enableAnsiPadding !== 'boolean' && options.enableAnsiPadding !== null) {
           throw new TypeError('The "config.options.enableAnsiPadding" property must be of type boolean or null.');
         }
 
-        this.config.options.enableAnsiPadding = config.options.enableAnsiPadding;
+        this.config.options.enableAnsiPadding = options.enableAnsiPadding;
       }
 
-      if (config.options.enableAnsiWarnings !== undefined) {
-        if (typeof config.options.enableAnsiWarnings !== 'boolean' && config.options.enableAnsiWarnings !== null) {
+      if (options.enableAnsiWarnings !== undefined) {
+        if (typeof options.enableAnsiWarnings !== 'boolean' && options.enableAnsiWarnings !== null) {
           throw new TypeError('The "config.options.enableAnsiWarnings" property must be of type boolean or null.');
         }
 
-        this.config.options.enableAnsiWarnings = config.options.enableAnsiWarnings;
+        this.config.options.enableAnsiWarnings = options.enableAnsiWarnings;
       }
 
-      if (config.options.enableArithAbort !== undefined) {
-        if (typeof config.options.enableArithAbort !== 'boolean' && config.options.enableArithAbort !== null) {
+      if (options.enableArithAbort !== undefined) {
+        if (typeof options.enableArithAbort !== 'boolean' && options.enableArithAbort !== null) {
           throw new TypeError('The "config.options.enableArithAbort" property must be of type boolean or null.');
         }
 
-        this.config.options.enableArithAbort = config.options.enableArithAbort;
+        this.config.options.enableArithAbort = options.enableArithAbort;
       }
 
-      if (config.options.enableConcatNullYieldsNull !== undefined) {
-        if (typeof config.options.enableConcatNullYieldsNull !== 'boolean' && config.options.enableConcatNullYieldsNull !== null) {
+      if (options.enableConcatNullYieldsNull !== undefined) {
+        if (typeof options.enableConcatNullYieldsNull !== 'boolean' && options.enableConcatNullYieldsNull !== null) {
           throw new TypeError('The "config.options.enableConcatNullYieldsNull" property must be of type boolean or null.');
         }
 
-        this.config.options.enableConcatNullYieldsNull = config.options.enableConcatNullYieldsNull;
+        this.config.options.enableConcatNullYieldsNull = options.enableConcatNullYieldsNull;
       }
 
-      if (config.options.enableCursorCloseOnCommit !== undefined) {
-        if (typeof config.options.enableCursorCloseOnCommit !== 'boolean' && config.options.enableCursorCloseOnCommit !== null) {
+      if (options.enableCursorCloseOnCommit !== undefined) {
+        if (typeof options.enableCursorCloseOnCommit !== 'boolean' && options.enableCursorCloseOnCommit !== null) {
           throw new TypeError('The "config.options.enableCursorCloseOnCommit" property must be of type boolean or null.');
         }
 
-        this.config.options.enableCursorCloseOnCommit = config.options.enableCursorCloseOnCommit;
+        this.config.options.enableCursorCloseOnCommit = options.enableCursorCloseOnCommit;
       }
 
-      if (config.options.enableImplicitTransactions !== undefined) {
-        if (typeof config.options.enableImplicitTransactions !== 'boolean' && config.options.enableImplicitTransactions !== null) {
+      if (options.enableImplicitTransactions !== undefined) {
+        if (typeof options.enableImplicitTransactions !== 'boolean' && options.enableImplicitTransactions !== null) {
           throw new TypeError('The "config.options.enableImplicitTransactions" property must be of type boolean or null.');
         }
 
-        this.config.options.enableImplicitTransactions = config.options.enableImplicitTransactions;
+        this.config.options.enableImplicitTransactions = options.enableImplicitTransactions;
       }
 
-      if (config.options.enableNumericRoundabort !== undefined) {
-        if (typeof config.options.enableNumericRoundabort !== 'boolean' && config.options.enableNumericRoundabort !== null) {
+      if (options.enableNumericRoundabort !== undefined) {
+        if (typeof options.enableNumericRoundabort !== 'boolean' && options.enableNumericRoundabort !== null) {
           throw new TypeError('The "config.options.enableNumericRoundabort" property must be of type boolean or null.');
         }
 
-        this.config.options.enableNumericRoundabort = config.options.enableNumericRoundabort;
+        this.config.options.enableNumericRoundabort = options.enableNumericRoundabort;
       }
 
-      if (config.options.enableQuotedIdentifier !== undefined) {
-        if (typeof config.options.enableQuotedIdentifier !== 'boolean' && config.options.enableQuotedIdentifier !== null) {
+      if (options.enableQuotedIdentifier !== undefined) {
+        if (typeof options.enableQuotedIdentifier !== 'boolean' && options.enableQuotedIdentifier !== null) {
           throw new TypeError('The "config.options.enableQuotedIdentifier" property must be of type boolean or null.');
         }
 
-        this.config.options.enableQuotedIdentifier = config.options.enableQuotedIdentifier;
+        this.config.options.enableQuotedIdentifier = options.enableQuotedIdentifier;
       }
 
-      if (config.options.encrypt !== undefined) {
-        if (typeof config.options.encrypt !== 'boolean') {
+      if (options.encrypt !== undefined) {
+        if (typeof options.encrypt !== 'boolean') {
           throw new TypeError('The "config.options.encrypt" property must be of type boolean.');
         }
 
-        this.config.options.encrypt = config.options.encrypt;
+        this.config.options.encrypt = options.encrypt;
       } else {
         this.config.options.encrypt = true;
       }
 
-      if (config.options.fallbackToDefaultDb !== undefined) {
-        if (typeof config.options.fallbackToDefaultDb !== 'boolean') {
+      if (options.fallbackToDefaultDb !== undefined) {
+        if (typeof options.fallbackToDefaultDb !== 'boolean') {
           throw new TypeError('The "config.options.fallbackToDefaultDb" property must be of type boolean.');
         }
 
-        this.config.options.fallbackToDefaultDb = config.options.fallbackToDefaultDb;
+        this.config.options.fallbackToDefaultDb = options.fallbackToDefaultDb;
       }
 
-      if (config.options.instanceName !== undefined) {
-        if (typeof config.options.instanceName !== 'string') {
+      if (options.instanceName !== undefined) {
+        if (typeof options.instanceName !== 'string') {
           throw new TypeError('The "config.options.instanceName" property must be of type string.');
         }
 
-        this.config.options.instanceName = config.options.instanceName;
+        this.config.options.instanceName = options.instanceName;
         this.config.options.port = undefined;
       }
 
-      if (config.options.isolationLevel !== undefined) {
-        if (typeof config.options.isolationLevel !== 'number') {
+      if (options.isolationLevel !== undefined) {
+        if (typeof options.isolationLevel !== 'number') {
           throw new TypeError('The "config.options.language" property must be of type numer.');
         }
 
-        this.config.options.isolationLevel = config.options.isolationLevel;
+        this.config.options.isolationLevel = options.isolationLevel;
       }
 
-      if (config.options.language !== undefined) {
-        if (typeof config.options.language !== 'string' && config.options.language !== null) {
+      if (options.language !== undefined) {
+        if (typeof options.language !== 'string' && options.language !== null) {
           throw new TypeError('The "config.options.language" property must be of type string or null.');
         }
 
-        this.config.options.language = config.options.language;
+        this.config.options.language = options.language;
       }
 
-      if (config.options.localAddress !== undefined) {
-        if (typeof config.options.localAddress !== 'string') {
+      if (options.localAddress !== undefined) {
+        if (typeof options.localAddress !== 'string') {
           throw new TypeError('The "config.options.localAddress" property must be of type string.');
         }
 
-        this.config.options.localAddress = config.options.localAddress;
+        this.config.options.localAddress = options.localAddress;
       }
 
-      if (config.options.multiSubnetFailover !== undefined) {
-        if (typeof config.options.multiSubnetFailover !== 'boolean') {
+      if (options.multiSubnetFailover !== undefined) {
+        if (typeof options.multiSubnetFailover !== 'boolean') {
           throw new TypeError('The "config.options.multiSubnetFailover" property must be of type boolean.');
         }
 
-        this.config.options.multiSubnetFailover = config.options.multiSubnetFailover;
+        this.config.options.multiSubnetFailover = options.multiSubnetFailover;
       }
 
-      if (config.options.packetSize !== undefined) {
-        if (typeof config.options.packetSize !== 'number') {
+      if (options.packetSize !== undefined) {
+        if (typeof options.packetSize !== 'number') {
           throw new TypeError('The "config.options.packetSize" property must be of type number.');
         }
 
-        this.config.options.packetSize = config.options.packetSize;
+        this.config.options.packetSize = options.packetSize;
       }
 
-      if (config.options.port !== undefined) {
-        if (typeof config.options.port !== 'number') {
+      if (options.port !== undefined) {
+        if (typeof options.port !== 'number') {
           throw new TypeError('The "config.options.port" property must be of type number.');
         }
 
-        if (config.options.port <= 0 || config.options.port >= 65536) {
+        if (options.port <= 0 || options.port >= 65536) {
           throw new RangeError('The "config.options.port" property must be > 0 and < 65536');
         }
 
-        this.config.options.port = config.options.port;
+        this.config.options.port = options.port;
         this.config.options.instanceName = undefined;
       }
 
-      if (config.options.readOnlyIntent !== undefined) {
-        if (typeof config.options.readOnlyIntent !== 'boolean') {
+      if (options.readOnlyIntent !== undefined) {
+        if (typeof options.readOnlyIntent !== 'boolean') {
           throw new TypeError('The "config.options.readOnlyIntent" property must be of type boolean.');
         }
 
-        this.config.options.readOnlyIntent = config.options.readOnlyIntent;
+        this.config.options.readOnlyIntent = options.readOnlyIntent;
       }
 
-      if (config.options.requestTimeout !== undefined) {
-        if (typeof config.options.requestTimeout !== 'number') {
+      if (options.requestTimeout !== undefined) {
+        if (typeof options.requestTimeout !== 'number') {
           throw new TypeError('The "config.options.requestTimeout" property must be of type number.');
         }
 
-        this.config.options.requestTimeout = config.options.requestTimeout;
+        this.config.options.requestTimeout = options.requestTimeout;
       }
 
-      if (config.options.maxRetriesOnTransientErrors !== undefined) {
-        if (typeof config.options.maxRetriesOnTransientErrors !== 'number') {
+      if (options.maxRetriesOnTransientErrors !== undefined) {
+        if (typeof options.maxRetriesOnTransientErrors !== 'number') {
           throw new TypeError('The "config.options.maxRetriesOnTransientErrors" property must be of type number.');
         }
 
-        if (config.options.maxRetriesOnTransientErrors < 0) {
+        if (options.maxRetriesOnTransientErrors < 0) {
           throw new TypeError('The "config.options.maxRetriesOnTransientErrors" property must be equal or greater than 0.');
         }
 
-        this.config.options.maxRetriesOnTransientErrors = config.options.maxRetriesOnTransientErrors;
+        this.config.options.maxRetriesOnTransientErrors = options.maxRetriesOnTransientErrors;
       }
 
-      if (config.options.connectionRetryInterval !== undefined) {
-        if (typeof config.options.connectionRetryInterval !== 'number') {
+      if (options.connectionRetryInterval !== undefined) {
+        if (typeof options.connectionRetryInterval !== 'number') {
           throw new TypeError('The "config.options.connectionRetryInterval" property must be of type number.');
         }
 
-        if (config.options.connectionRetryInterval <= 0) {
+        if (options.connectionRetryInterval <= 0) {
           throw new TypeError('The "config.options.connectionRetryInterval" property must be greater than 0.');
         }
 
-        this.config.options.connectionRetryInterval = config.options.connectionRetryInterval;
+        this.config.options.connectionRetryInterval = options.connectionRetryInterval;
       }
 
-      if (config.options.rowCollectionOnDone !== undefined) {
-        if (typeof config.options.rowCollectionOnDone !== 'boolean') {
+      if (options.rowCollectionOnDone !== undefined) {
+        if (typeof options.rowCollectionOnDone !== 'boolean') {
           throw new TypeError('The "config.options.rowCollectionOnDone" property must be of type boolean.');
         }
 
-        this.config.options.rowCollectionOnDone = config.options.rowCollectionOnDone;
+        this.config.options.rowCollectionOnDone = options.rowCollectionOnDone;
       }
 
-      if (config.options.rowCollectionOnRequestCompletion !== undefined) {
-        if (typeof config.options.rowCollectionOnRequestCompletion !== 'boolean') {
+      if (options.rowCollectionOnRequestCompletion !== undefined) {
+        if (typeof options.rowCollectionOnRequestCompletion !== 'boolean') {
           throw new TypeError('The "config.options.rowCollectionOnRequestCompletion" property must be of type boolean.');
         }
 
-        this.config.options.rowCollectionOnRequestCompletion = config.options.rowCollectionOnRequestCompletion;
+        this.config.options.rowCollectionOnRequestCompletion = options.rowCollectionOnRequestCompletion;
       }
 
-      if (config.options.tdsVersion !== undefined) {
-        if (typeof config.options.tdsVersion !== 'string') {
+      if (options.tdsVersion !== undefined) {
+        if (typeof options.tdsVersion !== 'string') {
           throw new TypeError('The "config.options.tdsVersion" property must be of type string.');
         }
 
-        this.config.options.tdsVersion = config.options.tdsVersion;
+        this.config.options.tdsVersion = options.tdsVersion;
       }
 
-      if (config.options.textsize !== undefined) {
-        if (typeof config.options.textsize !== 'number' && config.options.textsize !== null) {
+      if (options.textsize !== undefined) {
+        if (typeof options.textsize !== 'number' && options.textsize !== null) {
           throw new TypeError('The "config.options.textsize" property must be of type number or null.');
         }
 
-        this.config.options.textsize = config.options.textsize;
+        this.config.options.textsize = options.textsize;
       }
 
-      if (config.options.trustServerCertificate !== undefined) {
-        if (typeof config.options.trustServerCertificate !== 'boolean') {
+      if (options.trustServerCertificate !== undefined) {
+        if (typeof options.trustServerCertificate !== 'boolean') {
           throw new TypeError('The "config.options.trustServerCertificate" property must be of type boolean.');
         }
 
-        this.config.options.trustServerCertificate = config.options.trustServerCertificate;
+        this.config.options.trustServerCertificate = options.trustServerCertificate;
       }
 
-      if (config.options.useColumnNames !== undefined) {
-        if (typeof config.options.useColumnNames !== 'boolean') {
+      if (options.useColumnNames !== undefined) {
+        if (typeof options.useColumnNames !== 'boolean') {
           throw new TypeError('The "config.options.useColumnNames" property must be of type boolean.');
         }
 
-        this.config.options.useColumnNames = config.options.useColumnNames;
+        this.config.options.useColumnNames = options.useColumnNames;
       }
 
-      if (config.options.useUTC !== undefined) {
-        if (typeof config.options.useUTC !== 'boolean') {
+      if (options.useUTC !== undefined) {
+        if (typeof options.useUTC !== 'boolean') {
           throw new TypeError('The "config.options.useUTC" property must be of type boolean.');
         }
 
-        this.config.options.useUTC = config.options.useUTC;
+        this.config.options.useUTC = options.useUTC;
       }
 
-      if (config.options.lowerCaseGuids !== undefined) {
-        if (typeof config.options.lowerCaseGuids !== 'boolean') {
+      if (options.lowerCaseGuids !== undefined) {
+        if (typeof options.lowerCaseGuids !== 'boolean') {
           throw new TypeError('The "config.options.lowerCaseGuids" property must be of type boolean.');
         }
 
-        this.config.options.lowerCaseGuids = config.options.lowerCaseGuids;
+        this.config.options.lowerCaseGuids = options.lowerCaseGuids;
       }
     }
 
@@ -1824,9 +1909,6 @@ class Connection extends EventEmitter {
     }
   }
 }
-
-module.exports = Connection;
-
 Connection.prototype.STATE = {
   CONNECTING: {
     name: 'Connecting',
@@ -2282,3 +2364,7 @@ Connection.prototype.STATE = {
     }
   }
 };
+
+
+export default Connection;
+module.exports = Connection;
