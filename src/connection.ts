@@ -148,7 +148,7 @@ abortTransactionOnError?: boolean,
 interface Configuration {
   server: string,
   authentication: Authentication,
-  options: Configuration,
+  options: ConfigOptions,
 }
 
 class Connection extends EventEmitter {
