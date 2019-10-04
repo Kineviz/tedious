@@ -1,4 +1,27 @@
 import { Metadata } from './metadata-parser';
+import { 
+  InfoMessageToken, 
+  SSPIToken, 
+  ErrorMessageToken, 
+  DatabaseEnvChangeToken, 
+  LanguageEnvChangeToken, 
+  CharsetEnvChangeToken, 
+  FedAuthInfoToken, 
+  FeatureExtAckToken, 
+  LoginAckToken, 
+  RoutingEnvChangeToken, 
+  PacketSizeEnvChangeToken, 
+  BeginTransactionEnvChangeToken, 
+  ColMetadataToken, 
+  OrderToken,
+  RowToken,
+  ReturnStatusToken,
+  ReturnValueToken,
+  DoneInProcToken,
+  DoneProcToken,
+  DoneToken
+} from './token/token';
+import { Socket } from 'net';
 
 const crypto = require('crypto');
 const os = require('os');
@@ -785,7 +808,7 @@ class Connection extends EventEmitter {
     this.createConnectTimer();
   }
 
-  cleanupConnection(cleanupTypeEnum) {
+  cleanupConnection(cleanupTypeEnum: number) {
     if (!this.closed) {
       this.clearConnectTimer();
       this.clearRequestTimer();
@@ -814,7 +837,7 @@ class Connection extends EventEmitter {
 
   createDebug() {
     this.debug = new Debug(this.config.options.debug);
-    this.debug.on('debug', (message) => {
+    this.debug.on('debug', (message: string) => {
       this.emit('debug', message);
     });
   }
@@ -822,11 +845,11 @@ class Connection extends EventEmitter {
   createTokenStreamParser() {
     this.tokenStreamParser = new TokenStreamParser(this.debug, undefined, this.config.options);
 
-    this.tokenStreamParser.on('infoMessage', (token) => {
+    this.tokenStreamParser.on('infoMessage', (token: InfoMessageToken) => {
       this.emit('infoMessage', token);
     });
 
-    this.tokenStreamParser.on('sspichallenge', (token) => {
+    this.tokenStreamParser.on('sspichallenge', (token: SSPIToken) => {
       if (token.ntlmpacket) {
         this.ntlmpacket = token.ntlmpacket;
         this.ntlmpacketBuffer = token.ntlmpacketBuffer;
@@ -835,7 +858,7 @@ class Connection extends EventEmitter {
       this.emit('sspichallenge', token);
     });
 
-    this.tokenStreamParser.on('errorMessage', (token) => {
+    this.tokenStreamParser.on('errorMessage', (token: ErrorMessageToken) => {
       this.emit('errorMessage', token);
       if (this.loggedIn) {
         const request = this.request;
@@ -863,27 +886,27 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('databaseChange', (token) => {
+    this.tokenStreamParser.on('databaseChange', (token: DatabaseEnvChangeToken) => {
       this.emit('databaseChange', token.newValue);
     });
 
-    this.tokenStreamParser.on('languageChange', (token) => {
+    this.tokenStreamParser.on('languageChange', (token: LanguageEnvChangeToken) => {
       this.emit('languageChange', token.newValue);
     });
 
-    this.tokenStreamParser.on('charsetChange', (token) => {
+    this.tokenStreamParser.on('charsetChange', (token: CharsetEnvChangeToken) => {
       this.emit('charsetChange', token.newValue);
     });
 
-    this.tokenStreamParser.on('fedAuthInfo', (token) => {
+    this.tokenStreamParser.on('fedAuthInfo', (token: FedAuthInfoToken) => {
       this.dispatchEvent('fedAuthInfo', token);
     });
 
-    this.tokenStreamParser.on('featureExtAck', (token) => {
+    this.tokenStreamParser.on('featureExtAck', (token: FeatureExtAckToken) => {
       this.dispatchEvent('featureExtAck', token);
     });
 
-    this.tokenStreamParser.on('loginack', (token) => {
+    this.tokenStreamParser.on('loginack', (token: LoginAckToken) => {
       if (!token.tdsVersion) {
         // unsupported TDS version
         this.loginError = ConnectionError('Server responded with unknown TDS version.', 'ETDS');
@@ -903,18 +926,18 @@ class Connection extends EventEmitter {
       this.loggedIn = true;
     });
 
-    this.tokenStreamParser.on('routingChange', (token) => {
+    this.tokenStreamParser.on('routingChange', (token: RoutingEnvChangeToken) => {
       this.routingData = token.newValue;
       this.dispatchEvent('routingChange');
     });
 
-    this.tokenStreamParser.on('packetSizeChange', (token) => {
+    this.tokenStreamParser.on('packetSizeChange', (token: PacketSizeEnvChangeToken) => {
       this.messageIo.packetSize(token.newValue);
     });
 
     // A new top-level transaction was started. This is not fired
     // for nested transactions.
-    this.tokenStreamParser.on('beginTransaction', (token) => {
+    this.tokenStreamParser.on('beginTransaction', (token: BeginTransactionEnvChangeToken) => {
       this.transactionDescriptors.push(token.newValue);
       this.inTransaction = true;
     });
@@ -936,13 +959,13 @@ class Connection extends EventEmitter {
       this.emit('rollbackTransaction');
     });
 
-    this.tokenStreamParser.on('columnMetadata', (token) => {
+    this.tokenStreamParser.on('columnMetadata', (token: ColMetadataToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
           let columns;
           if (this.config.options.useColumnNames) {
-            columns = {};
+            columns = {} as any;
             for (let j = 0, len = token.columns.length; j < len; j++) {
               const col = token.columns[j];
               if (columns[col.colName] == null) {
@@ -960,7 +983,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('order', (token) => {
+    this.tokenStreamParser.on('order', (token: OrderToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -972,7 +995,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('row', (token) => {
+    this.tokenStreamParser.on('row', (token: RowToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -992,7 +1015,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('returnStatus', (token) => {
+    this.tokenStreamParser.on('returnStatus', (token: ReturnStatusToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -1002,7 +1025,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('returnValue', (token) => {
+    this.tokenStreamParser.on('returnValue', (token: ReturnValueToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -1011,7 +1034,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('doneProc', (token) => {
+    this.tokenStreamParser.on('doneProc', (token: DoneProcToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -1027,7 +1050,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('doneInProc', (token) => {
+    this.tokenStreamParser.on('doneInProc', (token: DoneInProcToken) => {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
@@ -1042,7 +1065,7 @@ class Connection extends EventEmitter {
       }
     });
 
-    this.tokenStreamParser.on('done', (token) => {
+    this.tokenStreamParser.on('done', (token: DoneToken) => {
       const request = this.request;
       if (request) {
         if (token.attention) {
@@ -1082,7 +1105,7 @@ class Connection extends EventEmitter {
       this.emit('resetConnection');
     });
 
-    this.tokenStreamParser.on('tokenStreamError', (error) => {
+    this.tokenStreamParser.on('tokenStreamError', (error: ErrorMessageToken) => {
       this.emit('error', error);
       this.close();
     });
@@ -1102,7 +1125,7 @@ class Connection extends EventEmitter {
         server: this.config.server,
         instanceName: this.config.options.instanceName,
         timeout: this.config.options.connectTimeout
-      }, (message, port) => {
+      }, (message: string, port: number) => {
         if (this.state === this.STATE.FINAL) {
           return;
         }
@@ -1115,14 +1138,14 @@ class Connection extends EventEmitter {
     }
   }
 
-  connectOnPort(port, multiSubnetFailover) {
+  connectOnPort(port: number, multiSubnetFailover: boolean) {
     const connectOpts = {
       host: this.routingData ? this.routingData.server : this.config.server,
       port: this.routingData ? this.routingData.port : port,
       localAddress: this.config.options.localAddress
     };
 
-    new Connector(connectOpts, multiSubnetFailover).execute((err, socket) => {
+    new Connector(connectOpts, multiSubnetFailover).execute((err: Error, socket: Socket) => {
       if (err) {
         return this.socketError(err);
       }
@@ -1133,7 +1156,7 @@ class Connection extends EventEmitter {
       }
 
       this.socket = socket;
-      this.socket.on('error', (error) => {
+      this.socket.on('error', (error: Error) => {
         this.socketError(error);
       });
       this.socket.on('close', () => {
