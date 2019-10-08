@@ -1,0 +1,413 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Tedious</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Tedious</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> Tedious</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#tedious-node-implementation-of-tds" id="tedious-node-implementation-of-tds" style="color: inherit; text-decoration: none;">
+					<h1>Tedious (node implementation of TDS)</h1>
+				</a>
+				<p><a href="https://david-dm.org/tediousjs/tedious"><img src="https://david-dm.org/tediousjs/tedious.svg" alt="Dependency Status"></a> <a href="http://badge.fury.io/js/tedious"><img src="https://badge.fury.io/js/tedious.svg" alt="NPM version"></a> <a href="http://travis-ci.org/tediousjs/tedious"><img src="https://secure.travis-ci.org/tediousjs/tedious.svg" alt="Build Status"></a> <a href="https://ci.appveyor.com/project/tediousjs/tedious"><img src="https://ci.appveyor.com/api/projects/status/ike3p58hljpyffrl?svg=true" alt="Build Status"></a> <a href="https://tediousjs-slack.herokuapp.com/"><img src="https://tediousjs-slack.herokuapp.com/badge.svg" alt="Slack Status"></a><a href="https://codecov.io/gh/tediousjs/tedious"><img src="https://codecov.io/gh/tediousjs/tedious/badge.svg" alt="Code Coverage"></a></p>
+				<p>Tedious is a pure-Javascript implementation of the <a href="http://msdn.microsoft.com/en-us/library/dd304523.aspx">TDS protocol</a>,
+				which is used to interact with instances of Microsoft&#39;s SQL Server. It is intended to be a fairly slim implementation of the protocol, with not too much additional functionality.</p>
+				<p><strong>NOTE: New columns are nullable by default as of version 1.11.0</strong></p>
+				<p>Previous behavior can be restored using <code>config.options.enableAnsiNullDefault = false</code>. See <a href="https://github.com/tediousjs/tedious/pull/230">pull request 230</a>.</p>
+				<p><strong>NOTE: Default login behavior has changed slightly as of version 1.2</strong></p>
+				<p>See the <a href="https://github.com/tediousjs/tedious/releases">changelog</a> for version history.</p>
+				<a href="#supported-tds-versions" id="supported-tds-versions" style="color: inherit; text-decoration: none;">
+					<h3>Supported TDS versions</h3>
+				</a>
+				<ul>
+					<li>TDS 7.4 (SQL Server 2012/2014/2016/2017)</li>
+					<li>TDS 7.3.B (SQL Server 2008 R2)</li>
+					<li>TDS 7.3.A (SQL Server 2008)</li>
+					<li>TDS 7.2 (SQL Server 2005)</li>
+					<li>TDS 7.1 (SQL Server 2000)</li>
+				</ul>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<p>Node.js is a prerequisite for installing tedious. Once you have installed <a href="https://nodejs.org/">Node.js</a>, installing tedious is simple: </p>
+				<pre><code>npm <span class="hljs-keyword">install</span> tedious</code></pre>
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h2>Getting Started</h2>
+				</a>
+				<ul>
+					<li><a href="https://www.microsoft.com/en-us/sql-server/developer-get-started/node/mac/">Node.js + macOS</a></li>
+					<li><a href="https://www.microsoft.com/en-us/sql-server/developer-get-started/node/rhel/">Node.js + Red Hat Enterprise Linux</a></li>
+					<li><a href="https://www.microsoft.com/en-us/sql-server/developer-get-started/node/sles/">Node.js + SUSE Linux Enterprise Server</a></li>
+					<li><a href="https://www.microsoft.com/en-us/sql-server/developer-get-started/node/ubuntu/">Node.js + Ubuntu</a></li>
+					<li><a href="https://www.microsoft.com/en-us/sql-server/developer-get-started/node/windows/">Node.js + Windows</a></li>
+				</ul>
+				<p><a name="documentation"></a></p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2>Documentation</h2>
+				</a>
+				<p>More documentation and code samples are available at <a href="http://tediousjs.github.io/tedious/">tediousjs.github.io/tedious/</a></p>
+				<p><a name="name"></a></p>
+				<a href="#name" id="name" style="color: inherit; text-decoration: none;">
+					<h2>Name</h2>
+				</a>
+				<p><em>Tedious</em> is simply derived from a fast, slightly garbled, pronunciation of the letters T, D and S. </p>
+				<a href="#developer-survey" id="developer-survey" style="color: inherit; text-decoration: none;">
+					<h2>Developer Survey</h2>
+				</a>
+				<p>We&#39;d like to learn more about how you use tedious:</p>
+				<p><a href="https://aka.ms/mssqltedioussurvey"><img style="float: right;"  height="67" width="156" src="https://sqlchoice.blob.core.windows.net/sqlchoice/static/images/survey.png"></a></p>
+				<p><a name="contributing"></a></p>
+				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+					<h2>Contributing</h2>
+				</a>
+				<p>We welcome contributions from the community. Feel free to checkout the code and submit pull requests.</p>
+				<p><a name="license"></a></p>
+				<a href="#licence" id="licence" style="color: inherit; text-decoration: none;">
+					<h2>Licence</h2>
+				</a>
+				<p>Copyright (c) 2010-2018 Mike D Pilsbury</p>
+				<p>The MIT License</p>
+				<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+				<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+				<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_all_headers_.html">"all-<wbr>headers"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_bulk_load_.html">"bulk-<wbr>load"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_collation_.html">"collation"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_connector_.html">"connector"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_type_.html">"data-<wbr>type"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_bigint_.html">"data-<wbr>types/bigint"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_binary_.html">"data-<wbr>types/binary"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_bit_.html">"data-<wbr>types/bit"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_bitn_.html">"data-<wbr>types/bitn"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_char_.html">"data-<wbr>types/char"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_date_.html">"data-<wbr>types/date"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_datetime_.html">"data-<wbr>types/datetime"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_datetime2_.html">"data-<wbr>types/datetime2"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_datetimen_.html">"data-<wbr>types/datetimen"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_datetimeoffset_.html">"data-<wbr>types/datetimeoffset"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_decimal_.html">"data-<wbr>types/decimal"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_decimaln_.html">"data-<wbr>types/decimaln"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_float_.html">"data-<wbr>types/float"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_floatn_.html">"data-<wbr>types/floatn"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_image_.html">"data-<wbr>types/image"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_int_.html">"data-<wbr>types/int"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_intn_.html">"data-<wbr>types/intn"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_money_.html">"data-<wbr>types/money"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_moneyn_.html">"data-<wbr>types/moneyn"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_data_types_nchar_.html">"data-<wbr>types/nchar"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_debug_.html">"debug"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_guid_parser_.html">"guid-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_incoming_message_stream_.html">"incoming-<wbr>message-<wbr>stream"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_instance_lookup_.html">"instance-<wbr>lookup"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_library_.html">"library"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_login7_payload_.html">"login7-<wbr>payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_message_.html">"message"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_message_io_.html">"message-<wbr>io"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_metadata_parser_.html">"metadata-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_ntlm_.html">"ntlm"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_ntlm_payload_.html">"ntlm-<wbr>payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_outgoing_message_stream_.html">"outgoing-<wbr>message-<wbr>stream"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_packet_.html">"packet"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_prelogin_payload_.html">"prelogin-<wbr>payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_.html">"request"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_rpcrequest_payload_.html">"rpcrequest-<wbr>payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_sender_.html">"sender"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_special_stored_procedure_.html">"special-<wbr>stored-<wbr>procedure"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_sqlbatch_payload_.html">"sqlbatch-<wbr>payload"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_tds_versions_.html">"tds-<wbr>versions"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_tedious_.html">"tedious"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_colmetadata_token_parser_.html">"token/colmetadata-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_done_token_parser_.html">"token/done-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_env_change_token_parser_.html">"token/env-<wbr>change-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_feature_ext_ack_parser_.html">"token/feature-<wbr>ext-<wbr>ack-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_fedauth_info_parser_.html">"token/fedauth-<wbr>info-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_infoerror_token_parser_.html">"token/infoerror-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_loginack_token_parser_.html">"token/loginack-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_nbcrow_token_parser_.html">"token/nbcrow-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_order_token_parser_.html">"token/order-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_returnstatus_token_parser_.html">"token/returnstatus-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_returnvalue_token_parser_.html">"token/returnvalue-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_row_token_parser_.html">"token/row-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_sspi_token_parser_.html">"token/sspi-<wbr>token-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_stream_parser_.html">"token/stream-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_token_.html">"token/token"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_token_token_stream_parser_.html">"token/token-<wbr>stream-<wbr>parser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_tracking_buffer_bigint_.html">"tracking-<wbr>buffer/bigint"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_tracking_buffer_writable_tracking_buffer_.html">"tracking-<wbr>buffer/writable-<wbr>tracking-<wbr>buffer"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_transaction_.html">"transaction"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_transient_error_lookup_.html">"transient-<wbr>error-<wbr>lookup"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

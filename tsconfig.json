@@ -13,5 +13,10 @@
 
   "include": [
       "src/**/*.ts", "src/data-types/bitn.js", "src/data-types/bit.js"
-  ]
+  ],
+
+  "typedocOptions": {
+    "mode": "modules",
+    "out": "docs"
+  }
 }
