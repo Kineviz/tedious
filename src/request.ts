@@ -282,7 +282,7 @@ class Request extends EventEmitter {
 
   // TODO: `type` must be a valid TDS value type
   /**
-   * Description
+   * <code>request.addParameter('city', TYPES.VarChar, 'London');</code>
    * @param name The parameter name. This should correspond to a parameter in the SQL, or a parameter that a called procedure expects.
    *             The name should not start '@'.
    * @param type One of the supported data types.
@@ -311,7 +311,7 @@ class Request extends EventEmitter {
 
   // TODO: `type` must be a valid TDS value type
   /**
-   * 
+   * <code>request.addOutputParameter('id', TYPES.Int);</code>
    * @param name The parameter name. This should correspond to a parameter in the SQL, or a parameter that a called procedure expects.
    * @param type One of the supported data types.
    * @param value The value that the parameter is to be given. The Javascript type of the argument should match that documented for data types
@@ -325,7 +325,7 @@ class Request extends EventEmitter {
     this.addParameter(name, type, value, options);
   }
 
-  /**@ignore */
+  /**@private */
   makeParamsParameter(parameters: Parameter[]) {
     let paramsParameter = '';
     for (let i = 0, len = parameters.length; i < len; i++) {
@@ -342,7 +342,7 @@ class Request extends EventEmitter {
     return paramsParameter;
   }
 
-  /**@ignore */
+  /**@private */
   transformIntoExecuteSqlRpc() {
     if (this.validateParameters()) {
       return;
@@ -362,7 +362,7 @@ class Request extends EventEmitter {
     this.sqlTextOrProcedure = 'sp_executesql';
   }
 
-  /**@ignore */
+  /**@private */
   transformIntoPrepareRpc() {
     this.originalParameters = this.parameters;
     this.parameters = [];
@@ -380,14 +380,14 @@ class Request extends EventEmitter {
     });
   }
 
-  /**@ignore */
+  /**@private */
   transformIntoUnprepareRpc() {
     this.parameters = [];
     this.addParameter('handle', TYPES.Int, this.handle);
     this.sqlTextOrProcedure = 'sp_unprepare';
   }
 
-  /**@ignore */
+  /**@private */
   transformIntoExecuteRpc(parameters: { [key: string]: unknown }) {
     this.parameters = [];
     this.addParameter('handle', TYPES.Int, this.handle);
@@ -405,7 +405,7 @@ class Request extends EventEmitter {
     this.sqlTextOrProcedure = 'sp_execute';
   }
 
-  /**@ignore */
+  /**@private */
   validateParameters() {
     for (let i = 0, len = this.parameters.length; i < len; i++) {
       const parameter = this.parameters[i];
@@ -419,6 +419,7 @@ class Request extends EventEmitter {
   }
 
   /**
+   * <code>request.pause();</code>
    * Temporarily suspends the flow of data from the database. No more 'row' events will be emitted until request.resume() is called.
    * If this request is already in a paused state, calling pause() has no effect.
    */
@@ -433,6 +434,7 @@ class Request extends EventEmitter {
   }
 
   /**
+   * <code>request.resume();</code>
    * Resumes the flow of data from the database. 
    * If this request is not in a paused state, calling resume() has no effect.
    */
@@ -457,6 +459,14 @@ class Request extends EventEmitter {
     this.emit('cancel');
   }
 
+  /**
+   * <code>request.setTimeout(timeout);</code>
+   * <dt><code>timeout</code></dt>
+   * <dd><p>The number of milliseconds before the request is considered failed, or 0 for no timeout.</p>
+   *   <p>When no timeout is set for the request, the <code>options.requestTimeout</code> of the <code>Connection</code> is used.</p>
+   * </dd>
+   * @param timeout 
+   */
   setTimeout(timeout?: number) {
     this.timeout = timeout;
   }

@@ -121,9 +121,15 @@ connection.execSql(request);</code></pre>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#addoutputparameter" class="tsd-kind-icon">add<wbr>Output<wbr>Parameter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#addparameter" class="tsd-kind-icon">add<wbr>Parameter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#makeparamsparameter" class="tsd-kind-icon">make<wbr>Params<wbr>Parameter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#pause" class="tsd-kind-icon">pause</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#resume" class="tsd-kind-icon">resume</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_request_.request.html#settimeout" class="tsd-kind-icon">set<wbr>Timeout</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#transformintoexecuterpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Rpc</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#transformintoexecutesqlrpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Sql<wbr>Rpc</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#transformintopreparerpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Prepare<wbr>Rpc</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#transformintounpreparerpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Unprepare<wbr>Rpc</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_request_.request.html#validateparameters" class="tsd-kind-icon">validate<wbr>Parameters</a></li>
 							</ul>
 						</section>
 					</div>
@@ -141,7 +147,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L245">request.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L245">request.ts:245</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -180,7 +186,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>column<wbr>Metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"columnMetadata"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;columnMetadata&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L96">request.ts:96</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L96">request.ts:96</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -215,7 +221,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>done<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"done"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;done&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L159">request.ts:159</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L159">request.ts:159</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -249,7 +255,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>done<wbr>InProc<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"doneInProc"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;doneInProc&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L185">request.ts:185</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L185">request.ts:185</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -282,7 +288,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>done<wbr>Proc<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"doneProc"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;doneProc&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L213">request.ts:213</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L213">request.ts:213</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -316,7 +322,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"error"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;error&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L112">request.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L112">request.ts:112</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -333,7 +339,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"order"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;order&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L245">request.ts:245</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L245">request.ts:245</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -351,7 +357,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>prepared<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"prepared"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;prepared&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L104">request.ts:104</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L104">request.ts:104</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -368,7 +374,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>return<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"returnValue"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;returnValue&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L234">request.ts:234</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L234">request.ts:234</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -396,7 +402,7 @@ connection.execSql(request);</code></pre>
 					<div class="tsd-signature tsd-kind-icon">Event_<wbr>row<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"row"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;row&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L132">request.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L132">request.ts:132</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -430,7 +436,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L320">request.ts:320</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L320">request.ts:320</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -476,7 +482,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L292">request.ts:292</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L292">request.ts:292</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -526,7 +532,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L451">request.ts:451</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L451">request.ts:451</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -535,6 +541,31 @@ connection.execSql(request);</code></pre>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="makeparamsparameter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> make<wbr>Params<wbr>Parameter</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">make<wbr>Params<wbr>Parameter<span class="tsd-signature-symbol">(</span>parameters<span class="tsd-signature-symbol">: </span><a href="../modules/_data_type_.html#parameter" class="tsd-signature-type">Parameter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L329">request.ts:329</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>parameters: <a href="../modules/_data_type_.html#parameter" class="tsd-signature-type">Parameter</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -548,7 +579,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L425">request.ts:425</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L425">request.ts:425</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -571,7 +602,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L439">request.ts:439</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L439">request.ts:439</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -594,7 +625,7 @@ connection.execSql(request);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L460">request.ts:460</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L460">request.ts:460</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -604,6 +635,115 @@ connection.execSql(request);</code></pre>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="transformintoexecuterpc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Into<wbr>Execute<wbr>Rpc</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Rpc<span class="tsd-signature-symbol">(</span>parameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L391">request.ts:391</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>parameters: <span class="tsd-signature-type">object</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-index-signature">
+											<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">unknown</span></h5>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="transformintoexecutesqlrpc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Into<wbr>Execute<wbr>Sql<wbr>Rpc</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Sql<wbr>Rpc<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L346">request.ts:346</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="transformintopreparerpc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Into<wbr>Prepare<wbr>Rpc</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Into<wbr>Prepare<wbr>Rpc<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L366">request.ts:366</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="transformintounpreparerpc" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> transform<wbr>Into<wbr>Unprepare<wbr>Rpc</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">transform<wbr>Into<wbr>Unprepare<wbr>Rpc<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L384">request.ts:384</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="validateparameters" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> validate<wbr>Parameters</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Parameters<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RequestError</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/6f12bb3/src/request.ts#L409">request.ts:409</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">RequestError</span>
+							</h4>
 						</li>
 					</ul>
 				</section>
@@ -666,6 +806,9 @@ connection.execSql(request);</code></pre>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_request_.request.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#makeparamsparameter" class="tsd-kind-icon">make<wbr>Params<wbr>Parameter</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_request_.request.html#pause" class="tsd-kind-icon">pause</a>
 							</li>
@@ -674,6 +817,21 @@ connection.execSql(request);</code></pre>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_request_.request.html#settimeout" class="tsd-kind-icon">set<wbr>Timeout</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#transformintoexecuterpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Rpc</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#transformintoexecutesqlrpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Execute<wbr>Sql<wbr>Rpc</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#transformintopreparerpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Prepare<wbr>Rpc</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#transformintounpreparerpc" class="tsd-kind-icon">transform<wbr>Into<wbr>Unprepare<wbr>Rpc</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+								<a href="_request_.request.html#validateparameters" class="tsd-kind-icon">validate<wbr>Parameters</a>
 							</li>
 						</ul>
 					</li>
