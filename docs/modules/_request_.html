@@ -94,9 +94,34 @@
 					<div class="tsd-signature tsd-kind-icon">Completion<wbr>Callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/2c83309/src/request.ts#L8">request.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L33">request.ts:33</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p><code>function (err, rowCount, rows) { }</code></p>
+							<p>
+								The callback is called when the request has completed, either successfully or with an error.
+								If an error occurs during execution of the statement(s), then <code>err</code> will describe the error.
+							</p>
+							<p>
+								As only one request at a time may be executed on a connection, another request should not
+								be initiated until this callback is called.
+							</p>
+							<p>This callback is called before requestCompleted event is emitted.</p>
+							<dl>
+								<dt><code>error</code></dt>
+								<dd><p>If an error occured, an error object.</p></dd>
+						</div>
+						<dt><code>rowCount</code></dt>
+						<dd><p>The number of rows emitted as result of executing the SQL statement.</p></dd>
+						<dt><code>rows</code></dt>
+						<dd><p>Rows as a result of executing the SQL statement.</p>
+							<p>Will only be avaiable if Connection's
+								<code>config.options.rowCollectionOnRequestCompletion</code>
+						is <code>true</code>.</p></dd>
+						</dl>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -131,7 +156,7 @@
 					<div class="tsd-signature tsd-kind-icon">Parameter<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/2c83309/src/request.ts#L10">request.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/d726ffe/src/request.ts#L35">request.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
