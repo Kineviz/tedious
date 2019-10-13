@@ -22,12 +22,12 @@ import Connection from './connection';
 
     <dt><code>rowCount</code></dt>
     <dd><p>The number of rows emitted as result of executing the SQL statement.</p></dd>
-      
+
     <dt><code>rows</code></dt>
     <dd><p>Rows as a result of executing the SQL statement.</p>
     <p>Will only be avaiable if Connection's
     <code>config.options.rowCollectionOnRequestCompletion</code>
-    is <code>true</code>.</p></dd>    
+    is <code>true</code>.</p></dd>
   </dl>
  */
 type CompletionCallback = (error: Error | null | undefined, rowCount?: number, rows?: any) => void;
@@ -39,31 +39,31 @@ type ParameterOptions = {
   scale?: number
 }
 
-/** 
+/**
   * <pre><code>let Request = require('tedious').Request;
   * request = new Request("select 42, 'hello world'", function(err, rowCount) {...});
   * connection.execSql(request);</code></pre>
-  @noInheritDoc 
+  @noInheritDoc
 */
 class Request extends EventEmitter {
-  /**@ignore */sqlTextOrProcedure?: string;
-  /**@ignore */parameters: Parameter[];
-  /**@ignore */parametersByName: { [key: string]: Parameter };
-  /**@ignore */originalParameters: Parameter[];
-  /**@ignore */preparing: boolean;
-  /**@ignore */canceled: boolean;
-  /**@ignore */paused: boolean;
-  /**@ignore */userCallback: CompletionCallback;
-  /**@ignore */handle?: number;
-  /**@ignore */error?: Error;
-  /**@ignore */connection?: Connection;
-  /**@ignore */timeout?: number;
+  /** @ignore */sqlTextOrProcedure?: string;
+  /** @ignore */parameters: Parameter[];
+  /** @ignore */parametersByName: { [key: string]: Parameter };
+  /** @ignore */originalParameters: Parameter[];
+  /** @ignore */preparing: boolean;
+  /** @ignore */canceled: boolean;
+  /** @ignore */paused: boolean;
+  /** @ignore */userCallback: CompletionCallback;
+  /** @ignore */handle?: number;
+  /** @ignore */error?: Error;
+  /** @ignore */connection?: Connection;
+  /** @ignore */timeout?: number;
 
-  /**@ignore */rows?: Array<any>;
-  /**@ignore */rst?: Array<any>;
-  /**@ignore */rowCount?: number;
+  /** @ignore */rows?: Array<any>;
+  /** @ignore */rst?: Array<any>;
+  /** @ignore */rowCount?: number;
 
-  /**@ignore */callback: CompletionCallback;
+  /** @ignore */callback: CompletionCallback;
 
   /**
    * <code> request.on('columnMetadata', function (columns) {...}); </code></br>
@@ -134,27 +134,27 @@ class Request extends EventEmitter {
   /**
    * <code> request.on('done', function (rowCount, more, rows) { }) </code>;</br>
    * </br>
-   * All rows from a result set have been provided (through row events). 
-   * This token is used to indicate the completion of a SQL statement. 
-   * As multiple SQL statements can be sent to the server in a single SQL batch, multiple done events can be generated. 
-   * An done event is emited for each SQL statement in the SQL batch except variable declarations. 
+   * All rows from a result set have been provided (through row events).
+   * This token is used to indicate the completion of a SQL statement.
+   * As multiple SQL statements can be sent to the server in a single SQL batch, multiple done events can be generated.
+   * An done event is emited for each SQL statement in the SQL batch except variable declarations.
    * For execution of SQL statements within stored procedures, doneProc and doneInProc events are used in place of done events.</br>
    * </br>
-   * If you are using execSql then SQL server may treat the multiple calls with the same query as a stored procedure. 
+   * If you are using execSql then SQL server may treat the multiple calls with the same query as a stored procedure.
    * When this occurs, the doneProc or doneInProc events may be emitted instead. You must handle both events to ensure complete coverage.
    <dl>
    <dt><code>rowCount</code></dt>
    <dd><p>The number of result rows. May be <code>undefined</code> if not available.</p></dd>
-   
+
    <dt><code>more</code></dt>
    <dd><p>If there are more results to come (probably because multiple statements are being executed), then <code>true</code>.</p></dd>
-    
+
    <dt><code>rows</code>
    <dd><p>Rows as a result of executing the SQL statement.</p>
         <p> Will only be avaiable if Connection's <code>config.options.rowCollectionOnDone</code> is <code>true</code>. </p></code></dt>
    </dd>
-   </dl> 
-   * @event  
+   </dl>
+   * @event
    */
   Event_done: 'done' = 'done';
 
@@ -165,7 +165,7 @@ class Request extends EventEmitter {
   in a stored procedure have been provided (through <code>row</code> events).
   </p>
   <p>
-  This event may also occur when executing multiple calls with the same query using 
+  This event may also occur when executing multiple calls with the same query using
   <code>execSql</code>.
   </p>
   <dl>
@@ -174,8 +174,8 @@ class Request extends EventEmitter {
 
     <dt><code>more</code></dt>
     <dd><p>If there are more result sets to come, then <code>true</code>.</p></dd>
-      
-    <dt><code>rows</code></dt>   
+
+    <dt><code>rows</code></dt>
     <dd><p>Rows as a result of executing the SQL.</p>
         <p>Will only be avaiable if Connection's <code>config.options.rowCollectionOnDone</code> is <code>true</code>.</p>
     </dd>
@@ -188,25 +188,25 @@ class Request extends EventEmitter {
    * <code>request.on('doneProc', function (rowCount, more, returnStatus, rows) { }); </code>
    * <p>Indicates the completion status of a stored procedure. This is also generated for stored procedures
   executed through SQL statements.</p>
-    <p>This event may also occur when executing multiple calls with the same query using 
+    <p>This event may also occur when executing multiple calls with the same query using
       <code>execSql</code>.</p>
-    <dl> 
+    <dl>
       <dt><code>rowCount</code></dt>
       <dd><p>The number of result rows. May be <code>undefined</code> if not available. </p>
       </dd>
-          
+
       <dt><code>more</code></dt>
       <dd><p>If there are more result sets to come, then <code>true</code>.</p>
       </dd>
-          
+
       <dt><code>returnStatus</code></dt>
       <dd> <p>The value returned from a stored procedure.</p>
       </dd>
-        
+
       <dt><code>rows</code></dt>
       <dd> <p>Rows as a result of executing the SQL.</p>
             <p> Will only be avaiable if Connection's <code>config.options.rowCollectionOnDone</code> is <code>true</code>.</p>
-      </dd>  
+      </dd>
     </dl>
    * @event
    */
@@ -220,11 +220,11 @@ class Request extends EventEmitter {
       <dt><code>parameterName</code></dt>
       <dd><p>The parameter name. (Does not start with '@'.)</p>
       </dd>
-        
+
       <dt><code>value</code></dt>
       <dd><p>The parameter's output value.</p>
       </dd>
-      
+
       <dt><code>metadata</code></dt>
       <dd><p>The same data that is exposed in the <code>columnMetadata</code> event.</p>
       </dd>
@@ -248,7 +248,7 @@ class Request extends EventEmitter {
   /**
    * <code>request = new Request("select 42, 'hello world'", function(err, rowCount) {...});</code>
    * @param sqlTextOrProcedure The SQL statement to be executed
-   * @param callback 
+   * @param callback
    */
   constructor(sqlTextOrProcedure: string | undefined, callback: CompletionCallback) {
     super();
@@ -265,7 +265,7 @@ class Request extends EventEmitter {
     this.connection = undefined;
     this.timeout = undefined;
     this.userCallback = callback;
-    this.callback = function (err: Error | undefined | null, rowCount?: number, rows?: any) {
+    this.callback = function(err: Error | undefined | null, rowCount?: number, rows?: any) {
       if (this.preparing) {
         this.preparing = false;
         if (err) {
@@ -327,7 +327,7 @@ class Request extends EventEmitter {
     this.addParameter(name, type, value, options);
   }
 
-  /**@private */
+  /** @private */
   makeParamsParameter(parameters: Parameter[]) {
     let paramsParameter = '';
     for (let i = 0, len = parameters.length; i < len; i++) {
@@ -344,7 +344,7 @@ class Request extends EventEmitter {
     return paramsParameter;
   }
 
-  /**@private */
+  /** @private */
   transformIntoExecuteSqlRpc() {
     if (this.validateParameters()) {
       return;
@@ -364,7 +364,7 @@ class Request extends EventEmitter {
     this.sqlTextOrProcedure = 'sp_executesql';
   }
 
-  /**@private */
+  /** @private */
   transformIntoPrepareRpc() {
     this.originalParameters = this.parameters;
     this.parameters = [];
@@ -382,14 +382,14 @@ class Request extends EventEmitter {
     });
   }
 
-  /**@private */
+  /** @private */
   transformIntoUnprepareRpc() {
     this.parameters = [];
     this.addParameter('handle', TYPES.Int, this.handle);
     this.sqlTextOrProcedure = 'sp_unprepare';
   }
 
-  /**@private */
+  /** @private */
   transformIntoExecuteRpc(parameters: { [key: string]: unknown }) {
     this.parameters = [];
     this.addParameter('handle', TYPES.Int, this.handle);
@@ -407,7 +407,7 @@ class Request extends EventEmitter {
     this.sqlTextOrProcedure = 'sp_execute';
   }
 
-  /**@private */
+  /** @private */
   validateParameters() {
     for (let i = 0, len = this.parameters.length; i < len; i++) {
       const parameter = this.parameters[i];
@@ -439,7 +439,7 @@ class Request extends EventEmitter {
   /**
    * <code>request.resume();</code></br>
    * </br>
-   * Resumes the flow of data from the database. 
+   * Resumes the flow of data from the database.
    * If this request is not in a paused state, calling resume() has no effect.
    */
   resume() {
@@ -473,7 +473,7 @@ class Request extends EventEmitter {
    * <dd><p>The number of milliseconds before the request is considered failed, or 0 for no timeout.</p>
    *   <p>When no timeout is set for the request, the <code>options.requestTimeout</code> of the <code>Connection</code> is used.</p>
    * </dd>
-   * @param timeout 
+   * @param timeout
    */
   setTimeout(timeout?: number) {
     this.timeout = timeout;

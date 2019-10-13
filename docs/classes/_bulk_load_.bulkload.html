@@ -69,6 +69,27 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>A BulkLoad instance is used to perform a bulk insert. Use <strong>connection.newBulkLoad</strong> to create a new instance, and <strong>connection.execBulkLoad</strong> to execute it.</p>
+					</div>
+					<pre><code>// optional BulkLoad options
+let options = { keepNulls: true };</br>
+// instantiate - provide the table where you'll be inserting to, options and a callback
+let bulkLoad = <strong>connection.newBulkLoad</strong>('MyTable', options, function (error, rowCount) {
+console.log('inserted %d rows', rowCount);
+});</br>
+// setup your columns - always indicate whether the column is nullable
+bulkLoad.addColumn('myInt', TYPES.Int, { nullable: false });
+bulkLoad.addColumn('myString', TYPES.NVarChar, { length: 50, nullable: true });</br>
+// add rows
+bulkLoad.addRow({ myInt: 7, myString: 'hello' });
+bulkLoad.addRow({ myInt: 23, myString: 'world' });</br>
+// execute
+<strong>connection.execBulkLoad</strong>(bulkLoad);</code></pre>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -86,28 +107,9 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#bulkoptions" class="tsd-kind-icon">bulk<wbr>Options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#callback" class="tsd-kind-icon">callback</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#canceled" class="tsd-kind-icon">canceled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#columns" class="tsd-kind-icon">columns</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#columnsbyname" class="tsd-kind-icon">columns<wbr>ByName</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#error" class="tsd-kind-icon">error</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#executionstarted" class="tsd-kind-icon">execution<wbr>Started</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#firstrowwritten" class="tsd-kind-icon">first<wbr>Row<wbr>Written</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#options" class="tsd-kind-icon">options</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#rowtopackettransform" class="tsd-kind-icon">row<wbr>ToPacket<wbr>Transform</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#streamingmode" class="tsd-kind-icon">streaming<wbr>Mode</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#table" class="tsd-kind-icon">table</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#timeout" class="tsd-kind-icon">timeout</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="_bulk_load_.bulkload.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 							</ul>
 						</section>
@@ -117,15 +119,15 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#addcolumn" class="tsd-kind-icon">add<wbr>Column</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_bulk_load_.bulkload.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#addrow" class="tsd-kind-icon">add<wbr>Row</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#cancel" class="tsd-kind-icon">cancel</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#createdonetoken" class="tsd-kind-icon">create<wbr>Done<wbr>Token</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#cancel" class="tsd-kind-icon">cancel</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#createdonetoken" class="tsd-kind-icon">create<wbr>Done<wbr>Token</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_bulk_load_.bulkload.html#emit" class="tsd-kind-icon">emit</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_bulk_load_.bulkload.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#getbulkinsertsql" class="tsd-kind-icon">get<wbr>Bulk<wbr>Insert<wbr>Sql</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#getcolmetadata" class="tsd-kind-icon">get<wbr>Col<wbr>Meta<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#getbulkinsertsql" class="tsd-kind-icon">get<wbr>Bulk<wbr>Insert<wbr>Sql</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#getcolmetadata" class="tsd-kind-icon">get<wbr>Col<wbr>Meta<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_bulk_load_.bulkload.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#getmessagestream" class="tsd-kind-icon">get<wbr>Message<wbr>Stream</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#getoptionssql" class="tsd-kind-icon">get<wbr>Options<wbr>Sql</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#getmessagestream" class="tsd-kind-icon">get<wbr>Message<wbr>Stream</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="_bulk_load_.bulkload.html#getoptionssql" class="tsd-kind-icon">get<wbr>Options<wbr>Sql</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#getrowstream" class="tsd-kind-icon">get<wbr>Row<wbr>Stream</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_bulk_load_.bulkload.html#gettablecreationsql" class="tsd-kind-icon">get<wbr>Table<wbr>Creation<wbr>Sql</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="_bulk_load_.bulkload.html#listenercount" class="tsd-kind-icon">listener<wbr>Count</a></li>
@@ -146,240 +148,8 @@
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Bulk<wbr>Load<span class="tsd-signature-symbol">(</span>table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, connectionOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">InternalConnectionOptions</span>, __namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_bulk_load_.bulkload.html" class="tsd-signature-type">BulkLoad</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L81">bulk-load.ts:81</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>table: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
-									<h5>connectionOptions: <span class="tsd-signature-type">InternalConnectionOptions</span></h5>
-								</li>
-								<li>
-									<h5>__namedParameters: <span class="tsd-signature-type">object</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>check<wbr>Constraints<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>fire<wbr>Triggers<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>keep<wbr>Nulls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>lock<wbr>Table<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-										</li>
-									</ul>
-								</li>
-								<li>
-									<h5>callback: <span class="tsd-signature-type">function</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, rowCount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5>err: <span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
-														</li>
-														<li>
-															<h5>rowCount: <span class="tsd-signature-type">number</span></h5>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_bulk_load_.bulkload.html" class="tsd-signature-type">BulkLoad</a></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="bulkoptions" class="tsd-anchor"></a>
-					<h3>bulk<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">bulk<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../modules/_bulk_load_.html#internaloptions" class="tsd-signature-type">InternalOptions</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L81">bulk-load.ts:81</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="callback" class="tsd-anchor"></a>
-					<h3>callback</h3>
-					<div class="tsd-signature tsd-kind-icon">callback<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L73">bulk-load.ts:73</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, rowCount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5>err: <span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
-											</li>
-											<li>
-												<h5>rowCount: <span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="canceled" class="tsd-anchor"></a>
-					<h3>canceled</h3>
-					<div class="tsd-signature tsd-kind-icon">canceled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L66">bulk-load.ts:66</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="columns" class="tsd-anchor"></a>
-					<h3>columns</h3>
-					<div class="tsd-signature tsd-kind-icon">columns<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_bulk_load_.html#column" class="tsd-signature-type">Column</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L75">bulk-load.ts:75</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="columnsbyname" class="tsd-anchor"></a>
-					<h3>columns<wbr>ByName</h3>
-					<div class="tsd-signature tsd-kind-icon">columns<wbr>ByName<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L76">bulk-load.ts:76</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="../modules/_bulk_load_.html#column" class="tsd-signature-type">Column</a></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="error" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> error</h3>
-					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Error</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L65">bulk-load.ts:65</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="executionstarted" class="tsd-anchor"></a>
-					<h3>execution<wbr>Started</h3>
-					<div class="tsd-signature tsd-kind-icon">execution<wbr>Started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L67">bulk-load.ts:67</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="firstrowwritten" class="tsd-anchor"></a>
-					<h3>first<wbr>Row<wbr>Written</h3>
-					<div class="tsd-signature tsd-kind-icon">first<wbr>Row<wbr>Written<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L78">bulk-load.ts:78</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="options" class="tsd-anchor"></a>
-					<h3>options</h3>
-					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InternalConnectionOptions</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L72">bulk-load.ts:72</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="rowtopackettransform" class="tsd-anchor"></a>
-					<h3>row<wbr>ToPacket<wbr>Transform</h3>
-					<div class="tsd-signature tsd-kind-icon">row<wbr>ToPacket<wbr>Transform<span class="tsd-signature-symbol">:</span> <a href="_bulk_load_.rowtransform.html" class="tsd-signature-type">RowTransform</a></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L79">bulk-load.ts:79</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="streamingmode" class="tsd-anchor"></a>
-					<h3>streaming<wbr>Mode</h3>
-					<div class="tsd-signature tsd-kind-icon">streaming<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L68">bulk-load.ts:68</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="table" class="tsd-anchor"></a>
-					<h3>table</h3>
-					<div class="tsd-signature tsd-kind-icon">table<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L69">bulk-load.ts:69</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="timeout" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> timeout</h3>
-					<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L70">bulk-load.ts:70</a></li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 					<a name="defaultmaxlisteners" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> default<wbr>Max<wbr>Listeners</h3>
@@ -404,37 +174,71 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L124">bulk-load.ts:124</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L174">bulk-load.ts:174</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds a column to the bulk load. The column definitions should match the table you are trying to insert into.
+										Attempting to call addColumn after the first row has been added will throw an exception.</br>
+										</br>
+									<code>bulkLoad.addColumn('MyIntColumn', TYPES.Int, { nullable: false }); </code></p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>name: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The name of the column.</p>
+									</div>
 								</li>
 								<li>
 									<h5>type: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>One of the supported <code>data types</code>.</p>
+									</div>
 								</li>
 								<li>
 									<h5>__namedParameters: <span class="tsd-signature-type">object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+											<p>Type <a href="../modules/_bulk_load_.html#columnoptions">ColumnOptions</a><p> Additional column type information. At a minimum, <code>nullable</code> must be set to true or false.</p>
+										</div>
+									</div>
 									<ul class="tsd-parameters">
 										<li class="tsd-parameter">
 											<h5>length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>For VarChar, NVarChar, VarBinary. Use length as <code>Infinity</code> for VarChar(max), NVarChar(max) and VarBinary(max).</p>
+											</div>
 										</li>
 										<li class="tsd-parameter">
 											<h5>nullable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>Indicates whether the column accepts NULL values.</p>
+											</div>
 										</li>
 										<li class="tsd-parameter">
 											<h5>obj<wbr>Name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>If the name of the column is different from the name of the property found on <code>rowObj</code> arguments passed to <a href="#function_addRow"></a>, then you can use this option to specify the property name.</p>
+											</div>
 										</li>
 										<li class="tsd-parameter">
 											<h5>output<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
 										</li>
 										<li class="tsd-parameter">
 											<h5>precision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>For Numeric, Decimal.</p>
+											</div>
 										</li>
 										<li class="tsd-parameter">
 											<h5>scale<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+											<div class="tsd-comment tsd-typography">
+												<p>For Numeric, Decimal, Time, DateTime2, DateTimeOffset.</p>
+											</div>
 										</li>
 									</ul>
 								</li>
@@ -499,49 +303,71 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L167">bulk-load.ts:167</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L235">bulk-load.ts:235</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Adds a row to the bulk insert. This method accepts arguments in three different formats:</p>
+									<pre><code>bulkLoad.addRow( rowObj )
+bulkLoad.addRow( columnArray )
+bulkLoad.addRow( col0, col1, ... colN )</code></pre>
+									</br>
+									<dt><code>rowObj</code></dt>
+									<dd><p>An object of key/value pairs representing column name (or objName) and value.</p></dd>
+								</div>
+								<dt><code>columnArray</code></dt>
+								<dd><p>An array representing the values of each column in the same order which they were added to the bulkLoad object.</p></dd>
+								<dt><code>col0, col1, ... colN</code></dt>
+								<dd><p>If there are at least two columns, values can be passed as multiple arguments instead of an array. They
+								must be in the same order the columns were added in.</p></dd>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>input: <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="cancel" class="tsd-anchor"></a>
-					<h3>cancel</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> cancel</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L329">bulk-load.ts:329</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L435">bulk-load.ts:435</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="createdonetoken" class="tsd-anchor"></a>
-					<h3>create<wbr>Done<wbr>Token</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> create<wbr>Done<wbr>Token</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">create<wbr>Done<wbr>Token<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L283">bulk-load.ts:283</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L370">bulk-load.ts:370</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
@@ -593,36 +419,40 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="getbulkinsertsql" class="tsd-anchor"></a>
-					<h3>get<wbr>Bulk<wbr>Insert<wbr>Sql</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Bulk<wbr>Insert<wbr>Sql</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Bulk<wbr>Insert<wbr>Sql<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L214">bulk-load.ts:214</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L283">bulk-load.ts:283</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="getcolmetadata" class="tsd-anchor"></a>
-					<h3>get<wbr>Col<wbr>Meta<wbr>Data</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Col<wbr>Meta<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Col<wbr>Meta<wbr>Data<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L245">bulk-load.ts:245</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L322">bulk-load.ts:322</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Buffer</span></h4>
 						</li>
 					</ul>
@@ -646,36 +476,40 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="getmessagestream" class="tsd-anchor"></a>
-					<h3>get<wbr>Message<wbr>Stream</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Message<wbr>Stream</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Message<wbr>Stream<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_message_.message.html" class="tsd-signature-type">Message</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L310">bulk-load.ts:310</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L415">bulk-load.ts:415</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="_message_.message.html" class="tsd-signature-type">Message</a></h4>
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
 					<a name="getoptionssql" class="tsd-anchor"></a>
-					<h3>get<wbr>Options<wbr>Sql</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> get<wbr>Options<wbr>Sql</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
 						<li class="tsd-signature tsd-kind-icon">get<wbr>Options<wbr>Sql<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L188">bulk-load.ts:188</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L257">bulk-load.ts:257</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -690,9 +524,27 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L299">bulk-load.ts:299</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L403">bulk-load.ts:403</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Switches the <code>BulkLoad</code> object into streaming mode and returns a
+										<a href="https://nodejs.org/dist/latest-v10.x/docs/api/stream.html#stream_writable_streams">writable stream</a>
+									that can be used to send a large amount of rows to the server.</p></p>
+									<pre><code>const bulkLoad = connection.newBulkLoad(...);
+bulkLoad.addColumn(...);
+const rowStream = bulkLoad.getRowStream();
+connection.execBulkLoad(bulkLoad);
+rowSource.pipe(rowStream);</code></pre>
+								</div>
+								<p>In streaming mode, <code>bulkLoad.addRow()</code> cannot be used. Instead all data rows must be written to the returned stream object.
+									The stream implementation uses data flow control to prevent memory overload.
+									<code><a href="https://nodejs.org/dist/latest-v10.x/docs/api/stream.html#stream_writable_write_chunk_encoding_callback">stream.write()</a></code>
+									returns <code>false</code> to indicate that data transfer should be paused.
+									After that, the stream emits a <code><a href="https://nodejs.org/dist/latest-v10.x/docs/api/stream.html#stream_event_drain">'drain' event</a></code>
+								when it is ready to resume data transfer.</p>
+							</div>
 							<h4 class="tsd-returns-title">Returns <a href="_bulk_load_.rowtransform.html" class="tsd-signature-type">RowTransform</a></h4>
 						</li>
 					</ul>
@@ -707,9 +559,18 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L229">bulk-load.ts:229</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L305">bulk-load.ts:305</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>This is simply a helper utility function which returns a CREATE TABLE SQL statement based on the columns added to the bulkLoad object.
+									This may be particularly handy when you want to insert into a temporary table (a table which starts with #).</p>
+									<pre><code>var sql = bulkLoad.getTableCreationSql();</code></pre>
+									<p>A side note on bulk inserting into temporary tables: if you want to access a local temporary table after executing the bulk load,
+									you&#39;ll need to use the same connection and execute your requests using <code>connection.execSqlBatch</code> instead of <code>.execSql</code></p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -1125,13 +986,25 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/a1fb6fa/src/bulk-load.ts#L279">bulk-load.ts:279</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L365">bulk-load.ts:365</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p> Sets a timeout for this bulk load.</p>
+									<pre><code>bulkLoad.setTimeout(timeout);</code></pre>
+									</br>
+									<dt><code>timeout</code></dt>
+									<dd>The number of milliseconds before the bulk load is considered failed, or 0 for no timeout.
+									When no timeout is set for the bulk load, the options.requestTimeout of the Connection is used.</dd>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeout: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1192,48 +1065,6 @@
 					<li class="current tsd-kind-class tsd-parent-kind-external-module">
 						<a href="_bulk_load_.bulkload.html" class="tsd-kind-icon">Bulk<wbr>Load</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#constructor" class="tsd-kind-icon">constructor</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#bulkoptions" class="tsd-kind-icon">bulk<wbr>Options</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#callback" class="tsd-kind-icon">callback</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#canceled" class="tsd-kind-icon">canceled</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#columns" class="tsd-kind-icon">columns</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#columnsbyname" class="tsd-kind-icon">columns<wbr>ByName</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#error" class="tsd-kind-icon">error</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#executionstarted" class="tsd-kind-icon">execution<wbr>Started</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#firstrowwritten" class="tsd-kind-icon">first<wbr>Row<wbr>Written</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#options" class="tsd-kind-icon">options</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#rowtopackettransform" class="tsd-kind-icon">row<wbr>ToPacket<wbr>Transform</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#streamingmode" class="tsd-kind-icon">streaming<wbr>Mode</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#table" class="tsd-kind-icon">table</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_bulk_load_.bulkload.html#timeout" class="tsd-kind-icon">timeout</a>
-							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static">
 								<a href="_bulk_load_.bulkload.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
 							</li>
@@ -1246,10 +1077,10 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_bulk_load_.bulkload.html#addrow" class="tsd-kind-icon">add<wbr>Row</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#cancel" class="tsd-kind-icon">cancel</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#createdonetoken" class="tsd-kind-icon">create<wbr>Done<wbr>Token</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
@@ -1258,19 +1089,19 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="_bulk_load_.bulkload.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#getbulkinsertsql" class="tsd-kind-icon">get<wbr>Bulk<wbr>Insert<wbr>Sql</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#getcolmetadata" class="tsd-kind-icon">get<wbr>Col<wbr>Meta<wbr>Data</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 								<a href="_bulk_load_.bulkload.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#getmessagestream" class="tsd-kind-icon">get<wbr>Message<wbr>Stream</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 								<a href="_bulk_load_.bulkload.html#getoptionssql" class="tsd-kind-icon">get<wbr>Options<wbr>Sql</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">

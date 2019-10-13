@@ -2,7 +2,7 @@ import { DataType, ParameterData } from '../data-type';
 
 const IntN = require('./intn');
 
-/**This is a DataType */
+/** This is a DataType */
 const BigInt: DataType = {
   id: 0x7F,
   type: 'INT8',
