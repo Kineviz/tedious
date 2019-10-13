@@ -79,8 +79,8 @@ type ColumnOptions = {
 };
 
 /**
- A BulkLoad instance is used to perform a bulk insert. Use [[Connection.newBulkLoad]] to create
-    a new instance, and [[Connection.execBulkLoad]] to execute it.
+ A BulkLoad instance is used to perform a bulk insert. Use <strong>connection.newBulkLoad</strong> to create
+    a new instance, and <strong>connection.execBulkLoad</strong> to execute it.
     ```js
     // optional BulkLoad options
     let options = { keepNulls: true };
