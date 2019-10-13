@@ -40,9 +40,11 @@ type ParameterOptions = {
 }
 
 /**
-  * <pre><code>let Request = require('tedious').Request;
-  * request = new Request("select 42, 'hello world'", function(err, rowCount) {...});
-  * connection.execSql(request);</code></pre>
+ * ```js
+ * let Request = require('tedious').Request;
+ * request = new Request("select 42, 'hello world'", function(err, rowCount) {...});
+ * connection.execSql(request);
+ * ```
   @noInheritDoc
 */
 class Request extends EventEmitter {

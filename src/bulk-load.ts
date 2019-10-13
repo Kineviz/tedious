@@ -79,22 +79,24 @@ type ColumnOptions = {
 };
 
 /**
- * A BulkLoad instance is used to perform a bulk insert. Use <strong>connection.newBulkLoad</strong> to create a new instance, and <strong>connection.execBulkLoad</strong> to execute it.
- *
- * <pre><code>// optional BulkLoad options
-  let options = { keepNulls: true };</br>
-  // instantiate - provide the table where you'll be inserting to, options and a callback
-  let bulkLoad = <strong>connection.newBulkLoad</strong>('MyTable', options, function (error, rowCount) {
-    console.log('inserted %d rows', rowCount);
-  });</br>
-  // setup your columns - always indicate whether the column is nullable
-  bulkLoad.addColumn('myInt', TYPES.Int, { nullable: false });
-  bulkLoad.addColumn('myString', TYPES.NVarChar, { length: 50, nullable: true });</br>
-  // add rows
-  bulkLoad.addRow({ myInt: 7, myString: 'hello' });
-  bulkLoad.addRow({ myInt: 23, myString: 'world' });</br>
-  // execute
-  <strong>connection.execBulkLoad</strong>(bulkLoad);</code></pre>
+ A BulkLoad instance is used to perform a bulk insert. Use [[Connection.newBulkLoad]] to create
+    a new instance, and [[Connection.execBulkLoad]] to execute it.
+    ```js
+    // optional BulkLoad options
+    let options = { keepNulls: true };
+    // instantiate - provide the table where you'll be inserting to, options and a callback
+    let bulkLoad = connection.newBulkLoad('MyTable', options, function (error, rowCount) {
+      console.log('inserted %d rows', rowCount);
+    });
+    // setup your columns - always indicate whether the column is nullable
+    bulkLoad.addColumn('myInt', TYPES.Int, { nullable: false });
+    bulkLoad.addColumn('myString', TYPES.NVarChar, { length: 50, nullable: true });
+    // add rows
+    bulkLoad.addRow({ myInt: 7, myString: 'hello' });
+    bulkLoad.addRow({ myInt: 23, myString: 'world' });
+    // execute
+    connection.execBulkLoad/strong(bulkLoad);
+    ```
  */
 class BulkLoad extends EventEmitter {
   /** @ignore */error?: Error;

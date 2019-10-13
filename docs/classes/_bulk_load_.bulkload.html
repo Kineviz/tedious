@@ -72,22 +72,23 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A BulkLoad instance is used to perform a bulk insert. Use <strong>connection.newBulkLoad</strong> to create a new instance, and <strong>connection.execBulkLoad</strong> to execute it.</p>
+						<p>A BulkLoad instance is used to perform a bulk insert. Use [[Connection.newBulkLoad]] to create
+						a new instance, and [[Connection.execBulkLoad]] to execute it.</p>
+						<pre><code class="language-js"><span class="hljs-comment">// optional BulkLoad options</span>
+<span class="hljs-keyword">let</span> options = { <span class="hljs-attr">keepNulls</span>: <span class="hljs-literal">true</span> };
+<span class="hljs-comment">// instantiate - provide the table where you'll be inserting to, options and a callback</span>
+<span class="hljs-keyword">let</span> bulkLoad = connection.newBulkLoad(<span class="hljs-string">'MyTable'</span>, options, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">error, rowCount</span>) </span>{
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'inserted %d rows'</span>, rowCount);
+});
+<span class="hljs-comment">// setup your columns - always indicate whether the column is nullable</span>
+bulkLoad.addColumn(<span class="hljs-string">'myInt'</span>, TYPES.Int, { <span class="hljs-attr">nullable</span>: <span class="hljs-literal">false</span> });
+bulkLoad.addColumn(<span class="hljs-string">'myString'</span>, TYPES.NVarChar, { <span class="hljs-attr">length</span>: <span class="hljs-number">50</span>, <span class="hljs-attr">nullable</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-comment">// add rows</span>
+bulkLoad.addRow({ <span class="hljs-attr">myInt</span>: <span class="hljs-number">7</span>, <span class="hljs-attr">myString</span>: <span class="hljs-string">'hello'</span> });
+bulkLoad.addRow({ <span class="hljs-attr">myInt</span>: <span class="hljs-number">23</span>, <span class="hljs-attr">myString</span>: <span class="hljs-string">'world'</span> });
+<span class="hljs-comment">// execute</span>
+connection.execBulkLoad/strong(bulkLoad);</code></pre>
 					</div>
-					<pre><code>// optional BulkLoad options
-let options = { keepNulls: true };</br>
-// instantiate - provide the table where you'll be inserting to, options and a callback
-let bulkLoad = <strong>connection.newBulkLoad</strong>('MyTable', options, function (error, rowCount) {
-console.log('inserted %d rows', rowCount);
-});</br>
-// setup your columns - always indicate whether the column is nullable
-bulkLoad.addColumn('myInt', TYPES.Int, { nullable: false });
-bulkLoad.addColumn('myString', TYPES.NVarChar, { length: 50, nullable: true });</br>
-// add rows
-bulkLoad.addRow({ myInt: 7, myString: 'hello' });
-bulkLoad.addRow({ myInt: 23, myString: 'world' });</br>
-// execute
-<strong>connection.execBulkLoad</strong>(bulkLoad);</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
@@ -174,7 +175,7 @@ bulkLoad.addRow({ myInt: 23, myString: 'world' });</br>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L174">bulk-load.ts:174</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L176">bulk-load.ts:176</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -303,7 +304,7 @@ bulkLoad.addRow({ myInt: 23, myString: 'world' });</br>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L235">bulk-load.ts:235</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L237">bulk-load.ts:237</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -344,7 +345,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L435">bulk-load.ts:435</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L437">bulk-load.ts:437</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -363,7 +364,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L370">bulk-load.ts:370</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L372">bulk-load.ts:372</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -429,7 +430,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L283">bulk-load.ts:283</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L285">bulk-load.ts:285</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -448,7 +449,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L322">bulk-load.ts:322</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L324">bulk-load.ts:324</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -486,7 +487,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L415">bulk-load.ts:415</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L417">bulk-load.ts:417</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -505,7 +506,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L257">bulk-load.ts:257</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L259">bulk-load.ts:259</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -524,7 +525,7 @@ bulkLoad.addRow( col0, col1, ... colN )</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L403">bulk-load.ts:403</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L405">bulk-load.ts:405</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -559,7 +560,7 @@ rowSource.pipe(rowStream);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L305">bulk-load.ts:305</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L307">bulk-load.ts:307</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -986,7 +987,7 @@ rowSource.pipe(rowStream);</code></pre>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/e916dff/src/bulk-load.ts#L365">bulk-load.ts:365</a></li>
+									<li>Defined in <a href="https://github.com/IanChokSimba/tedious/blob/94406c3/src/bulk-load.ts#L367">bulk-load.ts:367</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
