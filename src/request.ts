@@ -95,7 +95,7 @@ class Request extends EventEmitter {
     </dl>
    * @event
    */
-  Event_columnMetadata: 'columnMetadata' = 'columnMetadata';
+  Event_columnMetadata?: 'columnMetadata';
 
   /**
    * <code> request.on('prepared', function () {...}); </code></br>
@@ -103,7 +103,7 @@ class Request extends EventEmitter {
    * The request has been prepared and can be used in subsequent calls to execute and unprepare.
    * @event
    */
-  Event_prepared: 'prepared' = 'prepared';
+  Event_prepared?: 'prepared';
 
   /**
    * <code> request.on('error', function (err) {...}); </code></br>
@@ -111,7 +111,7 @@ class Request extends EventEmitter {
    * The request encountered an error and has not been prepared.
    * @event
    */
-  Event_error: 'error' = 'error';
+  Event_error?: 'error';
 
   /**
    * <code> request.on('row', function (columns) {...}); </code></br>
@@ -131,7 +131,7 @@ class Request extends EventEmitter {
     </dl>
    * @event
    */
-  Event_row: 'row' = 'row';
+  Event_row?: 'row';
 
   /**
    * <code> request.on('done', function (rowCount, more, rows) { }) </code>;</br>
@@ -158,7 +158,7 @@ class Request extends EventEmitter {
    </dl>
    * @event
    */
-  Event_done: 'done' = 'done';
+  Event_done?: 'done';
 
   /**
    * <code>request.on('doneInProc', function (rowCount, more, rows) { });</code>
@@ -184,7 +184,7 @@ class Request extends EventEmitter {
   </dl>
    * @event
    */
-  Event_doneInProc: 'doneInProc'= 'doneInProc';
+  Event_doneInProc?: 'doneInProc';
 
   /**
    * <code>request.on('doneProc', function (rowCount, more, returnStatus, rows) { }); </code>
@@ -212,7 +212,7 @@ class Request extends EventEmitter {
     </dl>
    * @event
    */
-  Event_doneProc: 'doneProc' = 'doneProc';
+  Event_doneProc?: 'doneProc';
 
   /**
    * <code>request.on('returnValue', function (parameterName, value, metadata) { });</code>
@@ -233,7 +233,7 @@ class Request extends EventEmitter {
     </dl>
    * @event
    */
-  Event_returnValue: 'returnValue' = 'returnValue';
+  Event_returnValue?: 'returnValue';
 
   /**
    * <code>request.on('order', function (orderColumns) { });</code>
@@ -244,7 +244,7 @@ class Request extends EventEmitter {
 
    * @event
    */
-  Event_order: 'order' = 'order';
+  Event_order?: 'order';
 
 
   /**
