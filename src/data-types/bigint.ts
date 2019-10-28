@@ -1,6 +1,5 @@
 import { DataType, ParameterData } from '../data-type';
-
-const IntN = require('./intn');
+import IntN from './intn';
 
 /** This is a DataType */
 const BigInt: DataType = {
@@ -31,7 +30,7 @@ const BigInt: DataType = {
     cb();
   },
 
-  validate: function(value) : null | unknown | TypeError {
+  validate: function(value) : null | number | TypeError {
     if (value == null) {
       return null;
     }

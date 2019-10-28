@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events';
 import WritableTrackingBuffer from './tracking-buffer/writable-tracking-buffer';
-import { InternalConnectionOptions } from './connection';
+import Connection, { InternalConnectionOptions } from './connection';
 
-const Transform = require('readable-stream').Transform;
-const TOKEN_TYPE = require('./token/token').TYPE;
+import { Transform } from 'readable-stream';
+import { TYPE as TOKEN_TYPE } from './token/token';
 import Message from './message';
 import { TYPE as PACKET_TYPE } from './packet';
 
@@ -41,8 +41,7 @@ type InternalOptions = {
   lockTable: boolean,
 };
 
-type Options = {
-  /** Honors constraints during bulk load, using T-SQL <a href="https://technet.microsoft.com/en-us/library/ms186247(v=sql.105).aspx">CHECK_CONSTRAINTS</a>. (default: <code>false</code>) */
+export interface Options {
   checkConstraints?: InternalOptions['checkConstraints'],
 
   /** Honors insert triggers during bulk load, using the T-SQL <a href="https://technet.microsoft.com/en-us/library/ms187640(v=sql.105).aspx">FIRE_TRIGGERS</a>. (default: <code>false</code>) */
@@ -53,7 +52,9 @@ type Options = {
 
   /** Places a bulk update(BU) lock on table while performing bulk load, using T-SQL <a href="https://technet.microsoft.com/en-us/library/ms180876(v=sql.105).aspx">TABLOCK</a>. (default: <code>false</code>) */
   lockTable?: InternalOptions['lockTable'],
-};
+}
+
+export type Callback = (err: Error | undefined | null, rowCount?: number) => void;
 
 type Column = Parameter & {
   objName: string,
@@ -105,6 +106,11 @@ class BulkLoad extends EventEmitter {
   /** @ignore */streamingMode: boolean;
   /** @ignore */table: string;
   /** @ignore */timeout?: number
+  /** @ignore */rows?: Array<any>;
+  /** @ignore */rst?: Array<any>;
+  /** @ignore */rowCount?: number;
+
+  /** @ignore */paused?: boolean;
 
   /** @ignore */options: InternalConnectionOptions;
   /** @ignore */callback: (err: Error | undefined | null, rowCount: number) => void;
@@ -123,7 +129,7 @@ class BulkLoad extends EventEmitter {
     fireTriggers = false,
     keepNulls = false,
     lockTable = false,
-  }: Options, callback: (err: Error | undefined | null, rowCount: number) => void) {
+  }: Options, callback: Callback) {
     if (typeof checkConstraints !== 'boolean') {
       throw new TypeError('The "options.checkConstraints" property must be of type boolean.');
     }
