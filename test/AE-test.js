@@ -75,9 +75,16 @@ describe('AE Test', function () {
                 }
             })
 
+            connection.on('debug', function (text) {
+                console.log(text);
+            });
+            connection.on('infoMessage', function (info) {
+                console.log('state: ', info.state, ' | ', 'message: ', info.message)
+            })
+
             function sendQuery(connection) {
                 console.log('sending query')
-                let request = new Request('SELECT * FROM MyTable', (err, rowCount) => {
+                let request = new Request('SELECT * FROM DetTable', (err, rowCount) => {
                     if (err) {
                         console.log('Request err: ', err);
                     } else {

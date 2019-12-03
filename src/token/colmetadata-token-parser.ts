@@ -100,7 +100,7 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
   let flags = metadata.flags.toString(2);
   let encrypted;
 
-  if(flags.length >= 12) {
+  if (flags.length >= 12) {
     // get the 11th position (from right to left)
     encrypted = flags.charAt(flags.length - 12) === "1";
   }
@@ -121,7 +121,7 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
           }
           // Read encryptionAlgo as BYTE
           parser.readUInt8((encryptionAlgo) => {
-            const next=(algoName:string)=>{
+            const next = (algoName: string) => {
               // Read encryptionAlgoType as BYTE
               parser.readUInt8((encryptionAlgoType) => {
                 // Read normVersion as BYTE
@@ -141,14 +141,13 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
             // if the encryptionAlgo(algorithm id):
             // equal to 0: means this encryption uses a customized encryption algorithm
             // not equal to 0: means this encryption uses AEAD_AES_256_CBC_HMAC_SHA512 as the encryption algorithm
-            if(encryptionAlgo === 0)
-            {
+            if (encryptionAlgo === 0) {
               // Read algoName B_VARCHAR
               parser.readBVarChar((algoName) => {
                 next(algoName)
               })
             }
-            else{
+            else {
               next('undefined')
             }
           })
@@ -208,6 +207,14 @@ function readColumns(parser: Parser, options: InternalConnectionOptions, columnC
   });
 }
 
+function verifyTableIsEncrypted(cekTableMetadata: CekTableMetadata) {
+  let eK_INFO = cekTableMetadata.eK_INFO;
+  // Assuming each of the following values must be a non-zero integer to describe the Column Encryption Key which should be present for an encrypted column in the table. 
+  if (cekTableMetadata.ekValueCount === 0 || eK_INFO.count === 0 || eK_INFO.databaseId === 0 || eK_INFO.cekId === 0 || eK_INFO.cekMDVersion === 0 || eK_INFO.cekVersion === 0) {
+    throw new Error('Always Encrypted is enabled. At least one column in the table must be encrypted')
+  }
+}
+
 function readEncryptionKeyValue(parser: Parser, callback: (encryptionKeyValue: EncryptionKeyValue) => void) {
   parser.readUsVarByte((EncryptedKey) => { // The ciphertext containing the encryption key that is secured with the master.
     parser.readBVarChar((KeyStoreName) => { // The key store name component of the location where the master key is saved.
@@ -249,7 +256,7 @@ function readEk_Info(parser: Parser, EkValueCount: number, callback: (cekTable: 
             }
 
             let i = 0;
-            function next(done: () => void){
+            function next(done: () => void) {
               if (i === Count) {
                 done();
               }
@@ -259,9 +266,9 @@ function readEk_Info(parser: Parser, EkValueCount: number, callback: (cekTable: 
               })
 
               i += 1;
-              next(done);              
+              next(done);
             }
-            
+
             next(() => {
               callback(cekTableMetadata)
             })
@@ -273,23 +280,29 @@ function readEk_Info(parser: Parser, EkValueCount: number, callback: (cekTable: 
 }
 
 // 2.2.7.4 Token Stream Definition Parser -> 'CekTable'
-function readCekTable(parser: Parser, callback: (cekTable: CekTableMetadata) => void) {
-  parser.readUInt16LE((EkValueCount) => {
-    readEk_Info(parser, EkValueCount, callback);
-  })
+function readCekTable(parser: Parser, callback: (cekTable: CekTableMetadata | undefined) => void) {
+  if (parser.options.alwaysEncrypted) {
+    parser.readUInt16LE((EkValueCount) => {
+      readEk_Info(parser, EkValueCount, callback);
+    })
+  } else {
+    callback(undefined)
+  }
 }
-
 
 // 2.2.7.4 Token Stream Definition Parser
 function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], options: InternalConnectionOptions, callback: (token: ColMetadataToken) => void) {
   let columnCount: number;
-  let cekTableMetadata: CekTableMetadata;
+  let cekTableMetadata: CekTableMetadata | undefined;
 
   parser.readUInt16LE((count) => {
     columnCount = count;
 
     readCekTable(parser, (cekTable) => {
-      cekTableMetadata = cekTable;
+      if (cekTable !== undefined) {
+          verifyTableIsEncrypted(cekTable);
+          cekTableMetadata = cekTable;
+      }
 
       readColumns(parser, options, columnCount, (columns) => {
         callback(new ColMetadataToken(cekTableMetadata, columns))

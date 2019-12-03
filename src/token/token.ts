@@ -36,10 +36,10 @@ export abstract class Token {
 }
 
 export class ColMetadataToken extends Token {
-  cekTable: CekTableMetadata;
+  cekTable: CekTableMetadata | undefined;
   columns: ColumnMetadata[]
 
-  constructor(cekTable: CekTableMetadata, columns: ColumnMetadata[]) {
+  constructor(cekTable: CekTableMetadata | undefined, columns: ColumnMetadata[]) {
     super('COLMETADATA', 'columnMetadata');
     
     this.cekTable = cekTable;
