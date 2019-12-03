@@ -1,4 +1,4 @@
-import metadataParse, { Metadata } from '../metadata-parser';
+import metadataParse, { Metadata, TypeInfo, typeInfoParse  } from '../metadata-parser';
 
 import Parser from './stream-parser';
 import { InternalConnectionOptions } from '../connection';
@@ -10,7 +10,7 @@ import { sprintf } from 'sprintf-js';
 type CryptoMetaData = {
   ordinal: number,
   userType: any,
-  baseTypeInfo: any,
+  baseTypeInfo: TypeInfo,
   encryptionAlgo: any,
   algoName?: string,
   encryptionAlgoType: any,
@@ -114,11 +114,7 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
       // currently not support this two types
       (options.tdsVersion < '7_2' ? parser.readUInt16LE : parser.readUInt32LE).call(parser, (userType) => {
         // Read BaseTypeInfo as TYPE_INFO (UInt8) 
-        parser.readUInt8((typeNumber) => {
-          const type: DataType = TYPE[typeNumber];
-          if (!type) {
-            return parser.emit('error', new Error(sprintf('Unrecognised data type 0x%02X', typeNumber)));
-          }
+        typeInfoParse(parser,(typeInfo)=>{
           // Read encryptionAlgo as BYTE
           parser.readUInt8((encryptionAlgo) => {
             const next = (algoName: string) => {
@@ -129,7 +125,7 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
                   callback({
                     ordinal: ordinal,
                     userType: userType,
-                    baseTypeInfo: type,
+                    baseTypeInfo: typeInfo,
                     encryptionAlgo: encryptionAlgo,
                     algoName: algoName,
                     encryptionAlgoType: encryptionAlgoType,

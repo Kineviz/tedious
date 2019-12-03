@@ -39,6 +39,17 @@ export type Metadata = {
   udtInfo: UdtInfo | undefined
 };
 
+export type TypeInfo= {
+  type: DataType,
+  collation: Collation | undefined,
+  precision: number| undefined,
+  scale: number| undefined,
+  dataLength: number| undefined,
+  schema: XmlSchema | undefined,
+  udtInfo: UdtInfo | undefined
+}
+
+
 function readCollation(parser: Parser, callback: (collation: Collation | undefined) => void) {
   // s2.2.5.1.2
   parser.readBuffer(5, (collationData) => {
@@ -102,223 +113,218 @@ function readUDTInfo(parser: Parser, callback: (udtInfo: UdtInfo | undefined) =>
   });
 }
 
-function metadataParse(parser: Parser, options: InternalConnectionOptions, callback: (metadata: Metadata) => void) {
-  (options.tdsVersion < '7_2' ? parser.readUInt16LE : parser.readUInt32LE).call(parser, (userType) => {
-    parser.readUInt16LE((flags) => {
-      parser.readUInt8((typeNumber) => {
-        const type: DataType = TYPE[typeNumber];
+function typeInfoParse(parser: Parser, callback: (typeInfo: TypeInfo) => void) {
+  parser.readUInt8(typeNumber => {
+    const type: DataType = TYPE[typeNumber];
 
-        if (!type) {
-          return parser.emit('error', new Error(sprintf('Unrecognised data type 0x%02X', typeNumber)));
-        }
+    if (!type) {
+      return parser.emit('error', new Error(sprintf('Unrecognised data type 0x%02X', typeNumber)));
+    }
 
-        switch (type.name) {
-          case 'Null':
-          case 'TinyInt':
-          case 'SmallInt':
-          case 'Int':
-          case 'BigInt':
-          case 'Real':
-          case 'Float':
-          case 'SmallMoney':
-          case 'Money':
-          case 'Bit':
-          case 'SmallDateTime':
-          case 'DateTime':
-          case 'Date':
-            return callback({
-              userType: userType,
-              flags: flags,
+    switch (type.name) {
+      case 'Null':
+      case 'TinyInt':
+      case 'SmallInt':
+      case 'Int':
+      case 'BigInt':
+      case 'Real':
+      case 'Float':
+      case 'SmallMoney':
+      case 'Money':
+      case 'Bit':
+      case 'SmallDateTime':
+      case 'DateTime':
+      case 'Date':
+        return callback({
+          type: type,
+          collation: undefined,
+          precision: undefined,
+          scale: undefined,
+          dataLength: undefined,
+          schema: undefined,
+          udtInfo: undefined
+        });
+
+      case 'IntN':
+      case 'FloatN':
+      case 'MoneyN':
+      case 'BitN':
+      case 'UniqueIdentifier':
+      case 'DateTimeN':
+        return parser.readUInt8(dataLength => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: dataLength,
+            schema: undefined,
+            udtInfo: undefined
+          });
+        });
+
+      case 'Variant':
+        return parser.readUInt32LE(dataLength => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: dataLength,
+            schema: undefined,
+            udtInfo: undefined
+          });
+        });
+
+      case 'VarChar':
+      case 'Char':
+      case 'NVarChar':
+      case 'NChar':
+        return parser.readUInt16LE(dataLength => {
+          readCollation(parser, collation => {
+            callback({
               type: type,
-              collation: undefined,
+              collation: collation,
               precision: undefined,
               scale: undefined,
-              dataLength: undefined,
+              dataLength: dataLength,
               schema: undefined,
               udtInfo: undefined
             });
+          });
+        });
 
-          case 'IntN':
-          case 'FloatN':
-          case 'MoneyN':
-          case 'BitN':
-          case 'UniqueIdentifier':
-          case 'DateTimeN':
-            return parser.readUInt8((dataLength) => {
+      case 'Text':
+      case 'NText':
+        return parser.readUInt32LE(dataLength => {
+          readCollation(parser, collation => {
+            callback({
+              type: type,
+              collation: collation,
+              precision: undefined,
+              scale: undefined,
+              dataLength: dataLength,
+              schema: undefined,
+              udtInfo: undefined
+            });
+          });
+        });
+
+      case 'VarBinary':
+      case 'Binary':
+        return parser.readUInt16LE(dataLength => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: dataLength,
+            schema: undefined,
+            udtInfo: undefined
+          });
+        });
+
+      case 'Image':
+        return parser.readUInt32LE(dataLength => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: dataLength,
+            schema: undefined,
+            udtInfo: undefined
+          });
+        });
+
+      case 'Xml':
+        return readSchema(parser, schema => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: undefined,
+            schema: schema,
+            udtInfo: undefined
+          });
+        });
+
+      case 'Time':
+      case 'DateTime2':
+      case 'DateTimeOffset':
+        return parser.readUInt8(scale => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: scale,
+            dataLength: undefined,
+            schema: undefined,
+            udtInfo: undefined
+          });
+        });
+
+      case 'NumericN':
+      case 'DecimalN':
+        return parser.readUInt8(dataLength => {
+          parser.readUInt8(precision => {
+            parser.readUInt8(scale => {
               callback({
-                userType: userType,
-                flags: flags,
                 type: type,
                 collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: dataLength,
-                schema: undefined,
-                udtInfo: undefined
-              });
-            });
-
-          case 'Variant':
-            return parser.readUInt32LE((dataLength) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: dataLength,
-                schema: undefined,
-                udtInfo: undefined
-              });
-            });
-
-          case 'VarChar':
-          case 'Char':
-          case 'NVarChar':
-          case 'NChar':
-            return parser.readUInt16LE((dataLength) => {
-              readCollation(parser, (collation) => {
-                callback({
-                  userType: userType,
-                  flags: flags,
-                  type: type,
-                  collation: collation,
-                  precision: undefined,
-                  scale: undefined,
-                  dataLength: dataLength,
-                  schema: undefined,
-                  udtInfo: undefined
-                });
-              });
-            });
-
-          case 'Text':
-          case 'NText':
-            return parser.readUInt32LE((dataLength) => {
-              readCollation(parser, (collation) => {
-                callback({
-                  userType: userType,
-                  flags: flags,
-                  type: type,
-                  collation: collation,
-                  precision: undefined,
-                  scale: undefined,
-                  dataLength: dataLength,
-                  schema: undefined,
-                  udtInfo: undefined
-                });
-              });
-            });
-
-          case 'VarBinary':
-          case 'Binary':
-            return parser.readUInt16LE((dataLength) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: dataLength,
-                schema: undefined,
-                udtInfo: undefined
-              });
-            });
-
-          case 'Image':
-            return parser.readUInt32LE((dataLength) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: dataLength,
-                schema: undefined,
-                udtInfo: undefined
-              });
-            });
-
-          case 'Xml':
-            return readSchema(parser, (schema) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: undefined,
-                schema: schema,
-                udtInfo: undefined
-              });
-            });
-
-          case 'Time':
-          case 'DateTime2':
-          case 'DateTimeOffset':
-            return parser.readUInt8((scale) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
+                precision: precision,
                 scale: scale,
-                dataLength: undefined,
+                dataLength: dataLength,
                 schema: undefined,
                 udtInfo: undefined
               });
             });
+          });
+        });
 
-          case 'NumericN':
-          case 'DecimalN':
-            return parser.readUInt8((dataLength) => {
-              parser.readUInt8((precision) => {
-                parser.readUInt8((scale) => {
-                  callback({
-                    userType: userType,
-                    flags: flags,
-                    type: type,
-                    collation: undefined,
-                    precision: precision,
-                    scale: scale,
-                    dataLength: dataLength,
-                    schema: undefined,
-                    udtInfo: undefined
-                  });
-                });
-              });
-            });
+      case 'UDT':
+        return readUDTInfo(parser, udtInfo => {
+          callback({
+            type: type,
+            collation: undefined,
+            precision: undefined,
+            scale: undefined,
+            dataLength: undefined,
+            schema: undefined,
+            udtInfo: udtInfo
+          });
+        });
 
-          case 'UDT':
-            return readUDTInfo(parser, (udtInfo) => {
-              callback({
-                userType: userType,
-                flags: flags,
-                type: type,
-                collation: undefined,
-                precision: undefined,
-                scale: undefined,
-                dataLength: undefined,
-                schema: undefined,
-                udtInfo: udtInfo
-              });
-            });
-
-          default:
+      default:
             return parser.emit('error', new Error(sprintf('Unrecognised type %s', type.name)));
-        }
+    }
+  })
+}
+
+function metadataParse(parser: Parser, options: InternalConnectionOptions, callback: (metadata: Metadata) => void) {
+  (options.tdsVersion < '7_2' ? parser.readUInt16LE : parser.readUInt32LE).call(parser, userType => {
+    parser.readUInt16LE(flags => {
+      typeInfoParse(parser,  (typeInfo) => {
+        callback({
+          userType: userType,
+          flags: flags,
+          type: typeInfo.type,
+          collation: typeInfo.collation,
+          precision: typeInfo.precision,
+          scale: typeInfo.scale,
+          dataLength: typeInfo.dataLength,
+          schema: typeInfo.schema,
+          udtInfo:typeInfo.udtInfo
+        });
       });
     });
-  });
+  })
 }
 
 export default metadataParse;
-export { readCollation };
+export { readCollation, typeInfoParse };
 
 module.exports = metadataParse;
+module.exports.typeInfoParse = typeInfoParse;
 module.exports.readCollation = readCollation;
