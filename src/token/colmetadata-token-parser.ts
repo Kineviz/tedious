@@ -253,8 +253,8 @@ function readEk_Info(parser: Parser, EkValueCount: number, callback: (cekTable: 
 
             let i = 0;
             function next(done: () => void) {
-              if (i === Count) {
-                done();
+              if (i >= Count) {
+                return done();
               }
 
               readEncryptionKeyValue(parser, (encryptionKeyValue) => {
