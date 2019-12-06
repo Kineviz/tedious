@@ -94,12 +94,12 @@ function readCryptoMetaData(parser: Parser, options: InternalConnectionOptions, 
   // If client side enable the encrypted feature, and current column is encrypted, then 
   // program then try to parse CryptoMetaData
   let flags = metadata.flags.toString(2);
-  let encrypted;
-
-  if (flags.length >= 12) {
-    // get the 11th position (from right to left)
-    encrypted = flags.charAt(flags.length - 12) === "1";
-  }
+  // Eleventh bit of the parsed flags counted from right will be the encrypted flag
+  const fEncryptedBinMask = parseInt("100000000000",2)
+  // AND operation between two decmail numbers will compare their binary values
+  // Mask will set the target bit to 1. If the target bit in the input flags is also turned on(equal to 1),
+  // the AND operation will return the mask itself
+  let encrypted =(parseInt(flags) & fEncryptedBinMask) == fEncryptedBinMask;
 
   if (options.alwaysEncrypted && encrypted) {
     // Read ordinal as USHORT
