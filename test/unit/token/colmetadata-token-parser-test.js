@@ -1,6 +1,7 @@
 const dataTypeByName = require('../../../src/data-type').typeByName;
 const WritableTrackingBuffer = require('../../../src/tracking-buffer/writable-tracking-buffer');
 const TokenStreamParser = require('../../../src/token/stream-parser');
+const Colmetadata = require('../../../src/token/colmetadata-token-parser');
 const assert = require('chai').assert;
 
 describe('Colmetadata Token Parser', () => {
@@ -71,4 +72,12 @@ describe('Colmetadata Token Parser', () => {
     assert.strictEqual(token.columns[0].colName, 'name');
     assert.strictEqual(token.columns[0].dataLength, length);
   });
+
+  it('readCekTable should return undefined when alwaysEncrypted is not specified', function (done) {
+    const parser = new TokenStreamParser({ token() { } }, {}, {});
+    Colmetadata.readCekTable(parser, (data) => {
+      assert.isUndefined(data);
+      done();
+    })
+  })
 });

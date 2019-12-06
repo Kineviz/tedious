@@ -1,7 +1,6 @@
 const { assert } = require('chai');
 const Connection = require('../src/connection');
 const Parser = require('../src/token/stream-parser');
-const colMetadataParser = require('../src/token/colmetadata-token-parser');
 const fs = require('fs');
 const homedir = require('os').homedir();
 const Request = require('../src/request');
@@ -154,7 +153,6 @@ describe('AE Test', function () {
     })
 
     describe('Cryptometadata-token-parser.ts test', function () {
-
         // This is a buffer that holds an example returned column metadata from the server
         // This message starts with the "count" component
         // The flags and cryptometadata is separated from the whole buffer for later modifications
@@ -233,7 +231,7 @@ describe('AE Test', function () {
             parser.buffer = buf;
             parser.options = options
             //expected an error from typeInfoParse
-            assert.throws(() => { colMetadataParser(parser, [], options, (token) => { }) })
+            assert.throws(() => { Colmetadata.colMetadataParser(parser, [], options, (token) => { }) })
         })
         it('Cryptometadata with algo type equal to 0 ', function (done) {
             // Insert a mock algorithm name in the cyptometadata
