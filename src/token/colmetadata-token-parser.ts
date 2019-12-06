@@ -1,11 +1,7 @@
 import metadataParse, { Metadata, TypeInfo, typeInfoParse  } from '../metadata-parser';
-
 import Parser from './stream-parser';
 import { InternalConnectionOptions } from '../connection';
 import { ColMetadataToken } from './token';
-import { TYPE, DataType } from '../data-type';
-
-import { sprintf } from 'sprintf-js';
 
 type CryptoMetaData = {
   ordinal: number,
@@ -287,7 +283,7 @@ function readCekTable(parser: Parser, callback: (cekTable: CekTableMetadata | un
 }
 
 // 2.2.7.4 Token Stream Definition Parser
-function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], options: InternalConnectionOptions, callback: (token: ColMetadataToken) => void) {
+export function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], options: InternalConnectionOptions, callback: (token: ColMetadataToken) => void) {
   let columnCount: number;
   let cekTableMetadata: CekTableMetadata | undefined;
 
@@ -307,5 +303,5 @@ function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], optio
   })
 }
 
-export default colMetadataParser;
-module.exports = colMetadataParser;
+module.exports = {colMetadataParser, readCekTable};
+

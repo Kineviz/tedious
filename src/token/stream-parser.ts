@@ -5,7 +5,7 @@ import JSBI from 'jsbi';
 import { Transform } from 'readable-stream';
 import { TYPE, Token, EndOfMessageToken, ColMetadataToken } from './token';
 
-import colMetadataParser, { ColumnMetadata } from './colmetadata-token-parser';
+import { colMetadataParser, ColumnMetadata } from './colmetadata-token-parser';
 import { doneParser, doneInProcParser, doneProcParser } from './done-token-parser';
 import envChangeParser from './env-change-token-parser';
 import { errorParser, infoParser } from './infoerror-token-parser';

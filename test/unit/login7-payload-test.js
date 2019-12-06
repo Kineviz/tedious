@@ -1,4 +1,4 @@
-const { aschaisert } = require('chai');
+const { assert } = require('chai');
 const Login7Payload = require('../../src/login7-payload');
 
 describe('Login7Payload', function() {
