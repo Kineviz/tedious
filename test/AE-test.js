@@ -149,6 +149,16 @@ describe('AE Test', function () {
             it('asymmetricAlgo should equal "RSA_OAEP"', function () {
                 assert.strictEqual(cekTable.eK_INFO.encryptionKeyValue[0].asymmetricAlgo, "RSA_OAEP");
             })
+
+            it('should throw error if a column is not encrypted', function() {
+                let cekTable = {
+                    ekValueCount: 0,
+                }
+
+                assert.throws(function() {
+                    Colmetadata.verifyTableIsEncrypted(cekTable)
+                }, Error, 'Always Encrypted is enabled. At least one column in the table must be encrypted')
+            })
         })
     })
 

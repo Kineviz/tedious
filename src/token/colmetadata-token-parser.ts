@@ -303,5 +303,5 @@ export function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[]
   })
 }
 
-module.exports = {colMetadataParser, readCekTable};
+module.exports = {colMetadataParser, readCekTable, verifyTableIsEncrypted};
 

@@ -83,7 +83,7 @@
     "lint": "eslint src test --ext .js,.ts && tsc",
     "test": "mocha test/unit test/unit/token test/unit/tracking-buffer",
     "test-integration": "mocha test/integration/",
-    "test-all": "mocha test/unit/ test/unit/token/ test/unit/tracking-buffer test/integration/",
+    "test-all": "mocha test/unit/ test/unit/token/ test/unit/tracking-buffer test/integration/ test/AE-test.js",
     "build": "rimraf lib && babel src --out-dir lib --extensions .js,.ts",
     "prepublish": "npm run build",
     "semantic-release": "semantic-release"
