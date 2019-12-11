@@ -259,59 +259,86 @@ describe('AE Test', function () {
         })
     })
 
+    describe('Connection columnMetadata test', function() {
+        it('should return colmetadata array with CEK Metadata', function(done) {
+            config.options.useColumnNames = false;
+            let connection = new Connection(config);
+            connection.request = new Request(undefined, ()=>{});
+            let tokenStreamParser = connection.createTokenStreamParser();  
+            connection.request.on('columnMetadata', (data) => {
+                assert.equal(data[0], 'cekTable data');
+                assert.equal(data[1], 'columns data')
+                done();
+            })
+            tokenStreamParser.emit('columnMetadata', {cekTable: 'cekTable data', columns: 'columns data'});
+        })
+
+        it('should return colmetadata object with CEK Metadata', function(done) {
+            config.options.useColumnNames = true;
+            let connection = new Connection(config);
+            connection.request = new Request(undefined, ()=>{});
+            let tokenStreamParser = connection.createTokenStreamParser();  
+            connection.request.on('columnMetadata', (data) => {
+                assert.deepEqual(data['columns data'], {colName: "columns data"});
+                assert.equal(data['ek_info'], "cekTable data");
+                done();
+            })
+            tokenStreamParser.emit('columnMetadata', {cekTable: 'cekTable data', columns: [{colName: 'columns data'}]});
+        })
+    })
 })
 
 
 //------------------------------------------------
 
 //Dummy test, remove later. 
-xdescribe('Dry run', function () {
-    it('should do a simple query', function (done) {
-        let connection = new Connection(config);
+// xdescribe('Dry run', function () {
+//     it('should do a simple query', function (done) {
+//         let connection = new Connection(config);
 
-        connection.on('connect', (err) => {
-            if (err) {
-                console.log('connection error: ', err)
-                connection.close();
-                done();
-            } else {
-                sendQuery(connection);
-            }
-        })
-        /* 
-                    connection.on('debug', function (text) {
-                        console.log(text);
-                    });
-                    connection.on('infoMessage', function (info) {
-                        console.log('state: ', info.state, ' | ', 'message: ', info.message)
-                    }) */
+//         connection.on('connect', (err) => {
+//             if (err) {
+//                 console.log('connection error: ', err)
+//                 connection.close();
+//                 done();
+//             } else {
+//                 sendQuery(connection);
+//             }
+//         })
+//         /* 
+//                     connection.on('debug', function (text) {
+//                         console.log(text);
+//                     });
+//                     connection.on('infoMessage', function (info) {
+//                         console.log('state: ', info.state, ' | ', 'message: ', info.message)
+//                     }) */
 
-        function sendQuery(connection) {
-            console.log('sending query')
-            let request = new Request('SELECT * FROM DetTable', (err, rowCount) => {
-                if (err) {
-                    console.log('Request err: ', err);
-                } else {
-                    assert.isUndefined(err);
-                    connection.close();
-                    done();
-                }
-            })
+//         function sendQuery(connection) {
+//             console.log('sending query')
+//             let request = new Request('SELECT * FROM DetTable', (err, rowCount) => {
+//                 if (err) {
+//                     console.log('Request err: ', err);
+//                 } else {
+//                     assert.isUndefined(err);
+//                     connection.close();
+//                     done();
+//                 }
+//             })
 
-            /*                 let row = 1;
-                            request.on('row', function (columns) {
-                                console.log('row: ', row)
-                                columns.forEach(function (column) {
-                                    if (column.value === null) {
-                                        console.log('NULL');
-                                    } else {
-                                        console.log(column);
-                                    }
-                                });
-                                row += 1;
-                            }); */
+//             /*                 let row = 1;
+//                             request.on('row', function (columns) {
+//                                 console.log('row: ', row)
+//                                 columns.forEach(function (column) {
+//                                     if (column.value === null) {
+//                                         console.log('NULL');
+//                                     } else {
+//                                         console.log(column);
+//                                     }
+//                                 });
+//                                 row += 1;
+//                             }); */
 
-            connection.execSql(request);
-        }
-    })
-})
+//             connection.execSql(request);
+//         }
+//     })
+// })

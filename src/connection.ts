@@ -39,7 +39,7 @@ import Message from './message';
 import { Metadata } from './metadata-parser';
 import { FedAuthInfoToken, FeatureExtAckToken } from './token/token';
 import { createNTLMRequest } from './ntlm';
-import { ColumnMetadata } from './token/colmetadata-token-parser';
+import { ColumnMetadata, CekTableMetadata } from './token/colmetadata-token-parser';
 
 // A rather basic state machine for managing a connection.
 // Implements something approximating s3.2.1.
@@ -1151,8 +1151,12 @@ class Connection extends EventEmitter {
       const request = this.request;
       if (request) {
         if (!request.canceled) {
+
           if (this.config.options.useColumnNames) {
-            const columns: { [key: string]: ColumnMetadata } = {};
+            const columns: { [key: string]: ColumnMetadata | CekTableMetadata } = {};
+            if(this.config.options.alwaysEncrypted){
+              columns.ek_info = token.cekTable!;
+            }
 
             for (let j = 0, len = token.columns.length; j < len; j++) {
               const col = token.columns[j];
@@ -1163,7 +1167,12 @@ class Connection extends EventEmitter {
 
             request.emit('columnMetadata', columns);
           } else {
-            request.emit('columnMetadata', token.columns);
+            let columns: CekTableMetadata[] & ColumnMetadata[] = [];
+            if(this.config.options.alwaysEncrypted) {
+              columns.push(token.cekTable!)
+            }
+            const combArray = columns.concat(token.columns)
+            request.emit('columnMetadata', combArray);
           }
         }
       } else {
