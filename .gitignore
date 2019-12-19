@@ -1,0 +1,14 @@
+.*
+node_modules/*
+todo
+*sublime*
+npm-debug.log
+README.html
+generated
+lib/
+/scratch
+
+test/unit/perf-buffer.coffee
+
+src-coffee/
+test-coffee/
