@@ -32,11 +32,13 @@ config.options.encryptionKeyStoreProviders = [{
 }];
 config.options.tdsVersion = process.env.TEDIOUS_TDS_VERSION;
 
-describe('always encrypted', function() {
+config.options.encrypt = false;
+
+describe('always encrypted', function () {
   this.timeout(100000);
   let connection;
 
-  before(function() {
+  before(function () {
     if (config.options.tdsVersion < '7_4') {
       this.skip();
     }
@@ -90,7 +92,7 @@ describe('always encrypted', function() {
     connection.execSql(request);
   };
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     connection = new Connection(config);
     // connection.on('debug', (msg) => console.log(msg));
     connection.on('connect', () => {
@@ -103,7 +105,7 @@ describe('always encrypted', function() {
     });
   });
 
-  afterEach(function(done) {
+  afterEach(function (done) {
     if (!connection.closed) {
       dropKeys(() => {
         connection.on('end', done);
@@ -114,7 +116,7 @@ describe('always encrypted', function() {
     }
   });
 
-  it('should correctly insert/select the encrypted data', function(done) {
+  xit('should correctly insert/select the encrypted data', function (done) {
     const request = new Request(`CREATE TABLE test_always_encrypted (
       [plaintext]  nvarchar(50),
       [nvarchar_determ_test] nvarchar(50) COLLATE Latin1_General_BIN2 
@@ -190,7 +192,7 @@ describe('always encrypted', function() {
           return done();
         });
 
-        request.on('row', function(columns) {
+        request.on('row', function (columns) {
           values = columns.map((col) => col.value);
         });
 
@@ -209,4 +211,102 @@ describe('always encrypted', function() {
     });
     connection.execSql(request);
   });
+
+  it('should bulkLoad AE', function (done) {
+    const bulkLoad = connection.newBulkLoad('test_always_encrypted', (err) => {
+      if (err) {
+        return done(err);
+      }
+
+      done();
+    })
+
+    for (let [name, type, column] of [[
+      'test_int',
+      TYPES.TinyInt,
+      {
+        encryptionType: 'DETERMINISTIC',
+        algorithm: 'AEAD_AES_256_CBC_HMAC_SHA_256',
+        columnEncryptionKey: 'CEK1',
+      }
+    ]]) {
+      bulkLoad.addColumn(name, type, column);
+    }
+
+    const request = new Request(bulkLoad.getTableCreationSql(), (err, rowCount) => {
+      if (err) {
+        done(err);
+      }
+      console.log('done Request')
+      bulkLoad.addRow(1);
+      connection.execBulkLoad(bulkLoad);
+    })
+    console.log(bulkLoad.getTableCreationSql());
+
+    connection.execSql(request);
+
+    connection.on('infoMessage', infoError);
+    connection.on('errorMessage', infoError);
+    connection.on('debug', debug);
+  })
+
+  xit('should bulk load', function(done) {
+    const bulkLoad = connection.newBulkLoad('#tmpTestTable', function(
+      err,
+      rowCount
+    ) {
+      if (err) {
+        return done(err);
+      }
+
+      assert.strictEqual(rowCount, 5, 'Incorrect number of rows inserted.');
+
+      done();
+    });
+
+    bulkLoad.addColumn('nnn', TYPES.Int, {
+      nullable: false
+    });
+    bulkLoad.addColumn('sss', TYPES.NVarChar, {
+      length: 50,
+      nullable: true
+    });
+    bulkLoad.addColumn('ddd', TYPES.DateTime, {
+      nullable: false
+    });
+    const request = new Request(bulkLoad.getTableCreationSql(), function(err) {
+      if (err) {
+        return done(err);
+      }
+
+      bulkLoad.addRow({
+        nnn: 201,
+        sss: 'one zero one',
+        ddd: new Date(1986, 6, 20)
+      });
+      bulkLoad.addRow([202, 'one zero two', new Date()]);
+      bulkLoad.addRow(203, 'one zero three', new Date(2013, 7, 12));
+      bulkLoad.addRow({
+        nnn: 204,
+        sss: 'one zero four',
+        ddd: new Date()
+      });
+      bulkLoad.addRow({
+        nnn: 205,
+        sss: 'one zero five',
+        ddd: new Date()
+      });
+      connection.execBulkLoad(bulkLoad);
+    });
+    connection.execSqlBatch(request);
+  });
 });
+
+function infoError(info) {
+  console.log(info.number + ' : ' + info.message);
+}
+
+function debug(message) {
+  console.log(message);
+}
+

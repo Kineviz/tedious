@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import WritableTrackingBuffer from './tracking-buffer/writable-tracking-buffer';
 import Connection, { InternalConnectionOptions } from './connection';
+import { getParameterEncryptionMetadata } from './always-encrypted/get-parameter-encryption-metadata';
 
 import { Transform } from 'readable-stream';
 import { TYPE as TOKEN_TYPE } from './token/token';
@@ -39,6 +40,7 @@ type InternalOptions = {
   fireTriggers: boolean;
   keepNulls: boolean;
   lockTable: boolean;
+  alwaysEncryptedValueModification: boolean;
 };
 
 export interface Options {
@@ -46,11 +48,12 @@ export interface Options {
   fireTriggers?: InternalOptions['fireTriggers'];
   keepNulls?: InternalOptions['keepNulls'];
   lockTable?: InternalOptions['lockTable'];
+  alwaysEncryptedValueModification?: InternalOptions['alwaysEncryptedValueModification']
 }
 
 export type Callback = (err: Error | undefined | null, rowCount?: number) => void;
 
-type Column = Parameter & {
+type Column = Parameter & ColumnOptions & {
   objName: string;
 };
 
@@ -61,6 +64,11 @@ type ColumnOptions = {
   scale?: number;
   objName?: string;
   nullable?: boolean;
+  // For AE Feature:
+  collate?: string;
+  encryptionType?: string; // Deterministic or Random
+  algorithm?: string; // E.g., 'AEAD_AES_256_CBC_HMAC_SHA_256'
+  columnEncryptionKey?: string; // E.g., CEK1
 };
 
 // A transform that converts rows to packets.
@@ -81,7 +89,9 @@ class RowTransform extends Transform {
   }
 
   _transform(row: Array<any>, _encoding: string, callback: () => void) {
+    console.log('>>> transforming row ', row)
     if (!this.columnMetadataWritten) {
+      console.log('>>> this.push(', this.bulkLoad.getColMetaData(), ')')
       this.push(this.bulkLoad.getColMetaData());
       this.columnMetadataWritten = true;
     }
@@ -96,7 +106,7 @@ class RowTransform extends Transform {
         scale: c.scale,
         precision: c.precision,
         value: row[i]
-      }, this.mainOptions, () => {});
+      }, this.mainOptions, () => { });
     }
 
     this.push(buf.data);
@@ -105,6 +115,7 @@ class RowTransform extends Transform {
   }
 
   _flush(callback: () => void) {
+    console.log('>>> flushed!')
     this.push(this.bulkLoad.createDoneToken());
 
     process.nextTick(callback);
@@ -127,6 +138,8 @@ class BulkLoad extends EventEmitter {
 
   paused?: boolean;
 
+  EkValueCount: number;
+
   options: InternalConnectionOptions;
   callback: Callback;
 
@@ -143,6 +156,7 @@ class BulkLoad extends EventEmitter {
     fireTriggers = false,
     keepNulls = false,
     lockTable = false,
+    alwaysEncryptedValueModification = false
   }: Options, callback: Callback) {
     if (typeof checkConstraints !== 'boolean') {
       throw new TypeError('The "options.checkConstraints" property must be of type boolean.');
@@ -173,13 +187,26 @@ class BulkLoad extends EventEmitter {
     this.columnsByName = {};
     this.firstRowWritten = false;
     this.streamingMode = false;
+    this.EkValueCount = 0;
 
     this.rowToPacketTransform = new RowTransform(this); // eslint-disable-line no-use-before-define
 
-    this.bulkOptions = { checkConstraints, fireTriggers, keepNulls, lockTable };
+    this.bulkOptions = { checkConstraints, fireTriggers, keepNulls, lockTable, alwaysEncryptedValueModification };
   }
 
-  addColumn(name: string, type: DataType, { output = false, length, precision, scale, objName = name, nullable = true }: ColumnOptions) {
+  addColumn(name: string, type: DataType, {
+    output = false,
+    length,
+    precision,
+    scale,
+    objName = name,
+    nullable = true,
+    collate,
+    encryptionType,
+    algorithm,
+    columnEncryptionKey
+
+  }: ColumnOptions) {
     if (this.firstRowWritten) {
       throw new Error('Columns cannot be added to bulk insert after the first row has been written.');
     }
@@ -188,15 +215,19 @@ class BulkLoad extends EventEmitter {
     }
 
     const column = {
-      type: type,
-      name: name,
+      type,
+      name,
       value: null,
-      output: output,
-      length: length,
-      precision: precision,
-      scale: scale,
-      objName: objName,
-      nullable: nullable
+      output,
+      length,
+      precision,
+      scale,
+      objName,
+      nullable,
+      collate,
+      encryptionType,
+      algorithm,
+      columnEncryptionKey
     };
 
     if ((type.id & 0x30) === 0x20) {
@@ -218,7 +249,7 @@ class BulkLoad extends EventEmitter {
     this.columnsByName[name] = column;
   }
 
-  addRow(...input: [ { [key: string]: any } ] | Array<any>) {
+  addRow(...input: [{ [key: string]: any }] | Array<any>) {
     this.firstRowWritten = true;
 
     let row: any;
@@ -277,17 +308,38 @@ class BulkLoad extends EventEmitter {
     sql += ')';
 
     sql += this.getOptionsSql();
-    return sql;
+    // return sql;
+    return 'insert bulk test_always_encrypted([int_test] varbinary(1))'
   }
 
-  getTableCreationSql() {
-    let sql = 'CREATE TABLE ' + this.table + '(\n';
+  getTableCreationSql(): string {
+    console.log('>>> column: ', this.columns[0])
+    let sql = 'CREATE TABLE ' + this.table + ' (\n';
     for (let i = 0, len = this.columns.length; i < len; i++) {
       const c = this.columns[i];
+
       if (i !== 0) {
         sql += ',\n';
       }
       sql += '[' + c.name + '] ' + (c.type.declaration(c));
+
+      if (c.collate) {
+        sql += ` COLLATE ${c.collate}\n`;
+      }
+
+      if (c.encryptionType) {
+        sql += ` ENCRYPTED WITH (
+          ENCRYPTION_TYPE = ${c.encryptionType}, 
+          ALGORITHM = '${c.algorithm}', 
+          COLUMN_ENCRYPTION_KEY = [${c.columnEncryptionKey}])`;
+      }
+
+      if (c.columnEncryptionKey) {
+        this.EkValueCount += 1;
+      } else {
+        throw Error('No Column Encryption Key provided! Required for encrypted table.');
+      }
+
       if (c.nullable !== undefined) {
         sql += ' ' + (c.nullable ? 'NULL' : 'NOT NULL');
       }
@@ -297,11 +349,43 @@ class BulkLoad extends EventEmitter {
   }
 
   getColMetaData() {
+    //need a way to use: getParameterEncryptionMetadata() method
+
     const tBuf = new WritableTrackingBuffer(100, null, true);
     // TokenType
     tBuf.writeUInt8(TOKEN_TYPE.COLMETADATA);
     // Count
     tBuf.writeUInt16LE(this.columns.length);
+
+    // CekTable (2.2.5.7):
+
+    // EkValueCount (USHORT) [describes the number of cek entries]
+    // tBuf.writeUInt8(this.EkValueCount);
+
+    // *EK_INFO:
+    // EK_INFO = DatabaseId
+    //           CekId
+    //           CekVersion
+    //           CekMDVersion
+    //           Count
+    //           *EncryptionKeyValue
+
+    // DatabaseId = (ULONG) [A 4 byte integer value that represents the database ID where the column encryption key is stored.]
+    
+    // CekId = ULONG
+    // CekVersion = ULONG
+    // CekMDVersion = ULONGLONG
+    // Count = (BYTE) [The count of EncryptionKeyValue elements that are present in the message.]
+
+    // EncryptionKeyValue = EncryptedKey
+    //                      KeyStoreName
+    //                      KeyPath
+    //                      AsymmetricAlgo
+      
+    // EncryptedKey = US_VARBYTES
+    // KeyStoreName = B_VARCHAR
+    // KeyPath = US_VARCHAR
+    // AsymmetricAlgo = B_VARCHAR
 
     for (let j = 0, len = this.columns.length; j < len; j++) {
       const c = this.columns[j];

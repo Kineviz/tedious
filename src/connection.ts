@@ -142,7 +142,7 @@ export interface InternalConnectionOptions {
   cancelTimeout: number;
   columnEncryptionKeyCacheTTL: number;
   columnEncryptionSetting: boolean;
-  columnNameReplacer: undefined| ((colName: string, index: number, metadata: Metadata) => string);
+  columnNameReplacer: undefined | ((colName: string, index: number, metadata: Metadata) => string);
   connectionRetryInterval: number;
   connectTimeout: number;
   connectionIsolationLevel: typeof ISOLATION_LEVEL[keyof typeof ISOLATION_LEVEL];
@@ -1628,7 +1628,7 @@ class Connection extends EventEmitter {
       encrypt: this.config.options.encrypt
     });
     this.messageIo.sendMessage(TYPE.PRELOGIN, payload.data);
-    this.debug.payload(function() {
+    this.debug.payload(function () {
       return payload.toString('  ');
     });
   }
@@ -1705,7 +1705,7 @@ class Connection extends EventEmitter {
     this.routingData = undefined;
     this.messageIo.sendMessage(TYPE.LOGIN7, payload.toBuffer());
 
-    this.debug.payload(function() {
+    this.debug.payload(function () {
       return payload.toString('  ');
     });
   }
@@ -1920,6 +1920,28 @@ class Connection extends EventEmitter {
   }
 
   execBulkLoad(bulkLoad: BulkLoad) {
+    if (this.config.options.serverSupportsColumnEncryption) {
+      this.execBulkLoadWithAE(bulkLoad);
+    } else {
+      this.execBulkLoadHelper(bulkLoad);
+    }
+  }
+
+  execBulkLoadWithAE(bulkLoad: BulkLoad) {
+   /*  const request = new Request('exec [sys].sp_bcp_dbcmptlevel [master] set fmtonly on select * from test_always_encrypted set fmtonly off', (err) => {
+      console.log('>>> executing fmtonly request request')
+      if (err) {
+        console.log(err);
+      }
+      this.execBulkLoadHelper(bulkLoad);
+    })
+    
+    this.execSqlBatch(request); */
+
+    this.execBulkLoadHelper(bulkLoad);
+  }
+
+  execBulkLoadHelper(bulkLoad: BulkLoad) {
     bulkLoad.executionStarted = true;
     const request = new Request(bulkLoad.getBulkInsertSql(), (error: (Error & { code?: string }) | null | undefined) => {
       if (error) {
@@ -2170,7 +2192,7 @@ class Connection extends EventEmitter {
 
         message.once('finish', () => {
           this.resetConnectionOnNextRequest = false;
-          this.debug.payload(function() {
+          this.debug.payload(function () {
             return payload!.toString('  ');
           });
 
@@ -2234,17 +2256,17 @@ module.exports = Connection;
 Connection.prototype.STATE = {
   CONNECTING: {
     name: 'Connecting',
-    enter: function() {
+    enter: function () {
       this.initialiseConnection();
     },
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      socketConnect: function() {
+      socketConnect: function () {
         this.sendPreLogin();
         this.transitionTo(this.STATE.SENT_PRELOGIN);
       }
@@ -2252,25 +2274,25 @@ Connection.prototype.STATE = {
   },
   SENT_PRELOGIN: {
     name: 'SentPrelogin',
-    enter: function() {
+    enter: function () {
       this.emptyMessageBuffer();
     },
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.addToMessageBuffer(data);
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         const preloginPayload = new PreloginPayload(this.messageBuffer);
-        this.debug.payload(function() {
+        this.debug.payload(function () {
           return preloginPayload.toString('  ');
         });
 
@@ -2301,39 +2323,39 @@ Connection.prototype.STATE = {
   },
   REROUTING: {
     name: 'ReRouting',
-    enter: function() {
+    enter: function () {
       this.cleanupConnection(CLEANUP_TYPE.REDIRECT);
     },
     events: {
-      message: function() {
+      message: function () {
       },
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      reconnect: function() {
+      reconnect: function () {
         this.transitionTo(this.STATE.CONNECTING);
       }
     }
   },
   TRANSIENT_FAILURE_RETRY: {
     name: 'TRANSIENT_FAILURE_RETRY',
-    enter: function() {
+    enter: function () {
       this.curTransientRetryCount++;
       this.cleanupConnection(CLEANUP_TYPE.RETRY);
     },
     events: {
-      message: function() {
+      message: function () {
       },
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      retry: function() {
+      retry: function () {
         this.createRetryTimer();
       }
     }
@@ -2341,19 +2363,19 @@ Connection.prototype.STATE = {
   SENT_TLSSSLNEGOTIATION: {
     name: 'SentTLSSSLNegotiation',
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.messageIo.tlsHandshakeData(data);
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         if (this.messageIo.tlsNegotiationComplete) {
           this.sendLogin7Packet();
 
@@ -2373,19 +2395,19 @@ Connection.prototype.STATE = {
   SENT_LOGIN7_WITH_STANDARD_LOGIN: {
     name: 'SentLogin7WithStandardLogin',
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.sendDataToTokenStreamParser(data);
       },
-      routingChange: function() {
+      routingChange: function () {
         this.transitionTo(this.STATE.REROUTING);
       },
-      featureExtAck: function(token) {
+      featureExtAck: function (token) {
         if (token.columnEncryption) {
           this.config.options.serverSupportsColumnEncryption = true;
           return;
@@ -2407,10 +2429,10 @@ Connection.prototype.STATE = {
           this.loggedIn = false;
         }
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         if (this.loggedIn) {
           this.transitionTo(this.STATE.LOGGED_IN_SENDING_INITIAL_SQL);
         } else if (this.loginError) {
@@ -2431,19 +2453,19 @@ Connection.prototype.STATE = {
   SENT_LOGIN7_WITH_NTLM: {
     name: 'SentLogin7WithNTLMLogin',
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.sendDataToTokenStreamParser(data);
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         if (this.ntlmpacket) {
           const authentication = this.config.authentication as NtlmAuthentication;
 
@@ -2455,7 +2477,7 @@ Connection.prototype.STATE = {
           });
 
           this.messageIo.sendMessage(TYPE.NTLMAUTH_PKT, payload.data);
-          this.debug.payload(function() {
+          this.debug.payload(function () {
             return payload.toString('  ');
           });
 
@@ -2480,25 +2502,25 @@ Connection.prototype.STATE = {
   SENT_LOGIN7_WITH_FEDAUTH: {
     name: 'SentLogin7Withfedauth',
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.sendDataToTokenStreamParser(data);
       },
-      routingChange: function() {
+      routingChange: function () {
         this.transitionTo(this.STATE.REROUTING);
       },
-      fedAuthInfo: function(token) {
+      fedAuthInfo: function (token) {
         this.fedAuthInfoToken = token;
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         const fedAuthInfoToken = this.fedAuthInfoToken;
 
         if (fedAuthInfoToken && fedAuthInfoToken.stsurl && fedAuthInfoToken.spn) {
@@ -2570,23 +2592,23 @@ Connection.prototype.STATE = {
   },
   LOGGED_IN_SENDING_INITIAL_SQL: {
     name: 'LoggedInSendingInitialSql',
-    enter: function() {
+    enter: function () {
       this.sendInitialSql();
     },
     events: {
       socketError: function socketError() {
         this.transitionTo(this.STATE.FINAL);
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         this.transitionTo(this.STATE.FINAL);
       },
-      data: function(data) {
+      data: function (data) {
         this.sendDataToTokenStreamParser(data);
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         this.transitionTo(this.STATE.LOGGED_IN);
         this.processedInitialSql();
       }
@@ -2595,28 +2617,28 @@ Connection.prototype.STATE = {
   LOGGED_IN: {
     name: 'LoggedIn',
     events: {
-      socketError: function() {
+      socketError: function () {
         this.transitionTo(this.STATE.FINAL);
       }
     }
   },
   SENT_CLIENT_REQUEST: {
     name: 'SentClientRequest',
-    exit: function(nextState) {
+    exit: function (nextState) {
       this.clearRequestTimer();
       if (nextState !== this.STATE.FINAL) {
         this.tokenStreamParser.resume();
       }
     },
     events: {
-      socketError: function(err) {
+      socketError: function (err) {
         const sqlRequest = this.request!;
         this.request = undefined;
         this.transitionTo(this.STATE.FINAL);
 
         sqlRequest.callback(err);
       },
-      data: function(data) {
+      data: function (data) {
         this.clearRequestTimer(); // request timer is stopped on first data package
         const ret = this.sendDataToTokenStreamParser(data);
         if (ret === false) {
@@ -2625,13 +2647,13 @@ Connection.prototype.STATE = {
           this.messageIo.pause();
         }
       },
-      message: function() {
+      message: function () {
         // We have to channel the 'message' (EOM) event through the token stream
         // parser transform, to keep it in line with the flow of the tokens, when
         // the incoming data flow is paused and resumed.
         this.tokenStreamParser.addEndOfMessageMarker();
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         this.transitionTo(this.STATE.LOGGED_IN);
         const sqlRequest = this.request as Request;
         this.request = undefined;
@@ -2644,11 +2666,11 @@ Connection.prototype.STATE = {
   },
   SENT_ATTENTION: {
     name: 'SentAttention',
-    enter: function() {
+    enter: function () {
       this.attentionReceived = false;
     },
     events: {
-      socketError: function(err) {
+      socketError: function (err) {
         const sqlRequest = this.request!;
         this.request = undefined;
 
@@ -2656,13 +2678,13 @@ Connection.prototype.STATE = {
 
         sqlRequest.callback(err);
       },
-      data: function(data) {
+      data: function (data) {
         this.sendDataToTokenStreamParser(data);
       },
-      attention: function() {
+      attention: function () {
         this.attentionReceived = true;
       },
-      endOfMessageMarkerReceived: function() {
+      endOfMessageMarkerReceived: function () {
         // 3.2.5.7 Sent Attention State
         // Discard any data contained in the response, until we receive the attention response
         if (this.attentionReceived) {
@@ -2679,27 +2701,27 @@ Connection.prototype.STATE = {
           }
         }
       },
-      message: function() {
+      message: function () {
         this.tokenStreamParser.addEndOfMessageMarker();
       }
     }
   },
   FINAL: {
     name: 'Final',
-    enter: function() {
+    enter: function () {
       this.cleanupConnection(CLEANUP_TYPE.NORMAL);
     },
     events: {
-      loginFailed: function() {
+      loginFailed: function () {
         // Do nothing. The connection was probably closed by the client code.
       },
-      connectTimeout: function() {
+      connectTimeout: function () {
         // Do nothing, as the timer should be cleaned up.
       },
-      message: function() {
+      message: function () {
         // Do nothing
       },
-      socketError: function() {
+      socketError: function () {
         // Do nothing
       }
     }
