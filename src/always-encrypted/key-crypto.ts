@@ -9,6 +9,7 @@ import { AeadAes256CbcHmac256Algorithm, algorithmName } from './aead-aes-256-cbc
 import { AeadAes256CbcHmac256EncryptionKey } from './aead-aes-256-cbc-hmac-encryption-key';
 
 export const validateAndGetEncryptionAlgorithmName = (cipherAlgorithmId: number, cipherAlgorithmName?: string): string => {
+  console.log('> key-crypto.ts -> validateAndGetEncryptionAlgorithmName()')
   if (cipherAlgorithmId !== 2) {
     throw new Error('Custom cipher algorithm not supported.');
   }
@@ -17,6 +18,8 @@ export const validateAndGetEncryptionAlgorithmName = (cipherAlgorithmId: number,
 };
 
 export const encryptWithKey = async (plaintext: Buffer, md: CryptoMetadata, options: ConnectionOptions): Promise<Buffer> => {
+  console.log('> key-crypto.ts -> encryptWithKey()')
+
   if (!options.trustedServerNameAE) {
     throw new Error('Server name should not be null in EncryptWithKey');
   }
@@ -39,6 +42,8 @@ export const encryptWithKey = async (plaintext: Buffer, md: CryptoMetadata, opti
 };
 
 export const decryptWithKey = async (cipherText: Buffer, md: CryptoMetadata, options: ConnectionOptions): Promise<Buffer> => {
+  console.log('> key-crypto.ts -> decryptWithKey()')
+
   if (!options.trustedServerNameAE) {
     throw new Error('Server name should npt be null in DecryptWithKey');
   }
@@ -61,6 +66,8 @@ export const decryptWithKey = async (cipherText: Buffer, md: CryptoMetadata, opt
 };
 
 export const decryptSymmetricKey = async (md: CryptoMetadata, options: ConnectionOptions): Promise<void> => {
+  console.log('> key-crypto.ts -> decryptSymmetricKey()')
+
   if (!md) {
     throw new Error('md should not be null in DecryptSymmetricKey.');
   }

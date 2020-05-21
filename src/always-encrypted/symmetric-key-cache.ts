@@ -9,6 +9,7 @@ import LRU from 'lru-cache';
 const cache = new LRU<string, SymmetricKey>(0);
 
 export const getKey = async (keyInfo: EncryptionKeyInfo, options: ConnectionOptions): Promise<SymmetricKey> => {
+  console.log('> symmetric-key-cache.ts -> getKey()')
   if (!options.trustedServerNameAE) {
     throw new Error('Server name should npt be null in getKey');
   }

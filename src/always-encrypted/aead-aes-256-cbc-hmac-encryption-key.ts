@@ -8,6 +8,7 @@ export const keySize = 256;
 const keySizeInBytes = keySize / 8;
 
 export const deriveKey = (rootKey: Buffer, salt: string): Buffer => {
+  console.log('> aead-aes-256-cbc-hmac-encryption-key.ts -> deriveKey()')
   const hmac = createHmac('sha256', rootKey);
   hmac.update(Buffer.from(salt, 'utf16le'));
   return hmac.digest();
@@ -31,6 +32,7 @@ export class AeadAes256CbcHmac256EncryptionKey extends SymmetricKey {
   private ivKey: SymmetricKey;
 
   constructor(rootKey: Buffer, algorithmName: string) {
+    console.log('> aead-aes-256-cbc-hmac-encryption-key.ts -> new AeadAes256CbcHmac256EncryptionKey()')
     super(rootKey);
     this.algorithmName = algorithmName;
     this.encryptionKeySaltFormat = generateKeySalt('encryption', this.algorithmName, keySize);
@@ -59,14 +61,20 @@ export class AeadAes256CbcHmac256EncryptionKey extends SymmetricKey {
   }
 
   getEncryptionKey(): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-encryption-key.ts -> getEncryptionKey()')
+
     return this.encryptionKey.rootKey;
   }
 
   getMacKey(): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-encryption-key.ts -> getMacKey()')
+
     return this.macKey.rootKey;
   }
 
   getIvKey(): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-encryption-key.ts -> getIvKey()')
+
     return this.ivKey.rootKey;
   }
 }

@@ -40,11 +40,13 @@ export class ColMetadataToken extends Token {
   declare event: 'columnMetadata';
 
   columns: ColumnMetadata[]
+  colMetadataAsBytes: Buffer;
 
-  constructor(columns: ColumnMetadata[]) {
+  constructor(columns: ColumnMetadata[], colMetadataAsBytes: Buffer) {
     super('COLMETADATA', 'columnMetadata');
 
     this.columns = columns;
+    this.colMetadataAsBytes = colMetadataAsBytes;
   }
 }
 

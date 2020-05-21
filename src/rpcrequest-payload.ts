@@ -51,6 +51,8 @@ class RpcRequestPayload {
   }
 
   getData(cb: (data: Buffer) => void) {
+    console.log('> Rpcrequest-payload.ts -> getData()')
+
     const buffer = new WritableTrackingBuffer(500);
     if (this.options.tdsVersion >= '7_2') {
       const outstandingRequestCount = 1;
@@ -89,6 +91,7 @@ class RpcRequestPayload {
   }
 
   _writeParameter(parameter: Parameter, buffer: WritableTrackingBuffer, cb: () => void) {
+    console.log('> Rpcrequest-payload.ts -> _writeParameter()')
     buffer.writeBVarchar('@' + parameter.name);
 
     let statusFlags = 0;
@@ -108,6 +111,7 @@ class RpcRequestPayload {
   }
 
   _writeParameterData(parameter: Parameter, buffer: WritableTrackingBuffer, writeValue: boolean, cb: () => void) {
+    console.log('> Rpcrequest-payload.ts -> _writeParameterData()')
     const param: ParameterData = {
       value: parameter.value,
       cryptoMetadata: parameter.cryptoMetadata
@@ -150,6 +154,8 @@ class RpcRequestPayload {
   }
 
   _writeEncryptedParameter(parameter: Parameter, buffer: WritableTrackingBuffer, cb: () => void) {
+    console.log('> Rpcrequest-payload.ts -> _writeEncryptedParameter()')
+
     const encryptedParam = {
       value: parameter.encryptedVal,
       type: VarBinary,
@@ -168,6 +174,7 @@ class RpcRequestPayload {
   }
 
   _encryptParameters(parameters: Parameter[], callback: (parameters: Parameter[]) => void) {
+    console.log('> Rpcrequest-payload.ts -> _encryptParameters()')
     if (this.options.serverSupportsColumnEncryption === true) {
       const promises: Promise<void>[] = [];
 
@@ -193,6 +200,7 @@ class RpcRequestPayload {
   }
 
   _writeEncryptionMetadata(cryptoMetadata: CryptoMetadata | undefined, buffer: WritableTrackingBuffer, cb: () => void) {
+    console.log('> Rpcrequest-payload.ts -> _writeEncryptionMetadata')
     if (!cryptoMetadata || !cryptoMetadata.cekEntry || !cryptoMetadata.cekEntry.columnEncryptionKeyValues || cryptoMetadata.cekEntry.columnEncryptionKeyValues.length <= 0) {
       throw new Error('Invalid Crypto Metadata in _writeEncryptionMetadata');
     }

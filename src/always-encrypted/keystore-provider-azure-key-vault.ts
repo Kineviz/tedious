@@ -22,6 +22,7 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   private keyClient: undefined | KeyClient;
 
   constructor(clientId: string, clientKey: string, tenantId: string) {
+    console.log('> keystore-provider-azure-key-vault.ts -> new ColumnEncryptionAzureKeyVaultProvider()')
     this.name = 'AZURE_KEY_VAULT';
     this.azureKeyVaultDomainName = 'vault.azure.net';
     this.rsaEncryptionAlgorithmWithOAEPForAKV = 'RSA-OAEP';
@@ -30,6 +31,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   async decryptColumnEncryptionKey(masterKeyPath: string, encryptionAlgorithm: string, encryptedColumnEncryptionKey: Buffer): Promise<Buffer> {
+    console.log('> keystore-provider-azure-key-vault.ts -> decryptColumnEncryptionKey()')
+
     if (!encryptedColumnEncryptionKey) {
       throw new Error('Internal error. Encrypted column encryption key cannot be null.');
     }
@@ -101,6 +104,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   async encryptColumnEncryptionKey(masterKeyPath: string, encryptionAlgorithm: string, columnEncryptionKey: Buffer): Promise<Buffer> {
+    console.log('> keystore-provider-azure-key-vault.ts -> encryptColumnEncryptionKey()')
+
     if (!columnEncryptionKey) {
       throw new Error('Column encryption key cannot be null.');
     }
@@ -195,6 +200,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private async getMasterKey(masterKeyPath: string): Promise<KeyVaultKey> {
+    console.log('> keystore-provider-azure-key-vault.ts -> getMasterKey()')
+
     const keyParts = this.parsePath(masterKeyPath);
 
     this.createKeyClient(keyParts.vaultUrl);
@@ -203,6 +210,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private createKeyClient(keyVaultUrl: string): void {
+    console.log('> keystore-provider-azure-key-vault.ts -> createKeyClient()')
+
     if (!this.keyClient) {
       this.url = keyVaultUrl;
       this.keyClient = new KeyClient(keyVaultUrl, this.credentials);
@@ -210,10 +219,14 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private createCryptoClient(masterKey: KeyVaultKey): CryptographyClient {
+    console.log('> keystore-provider-azure-key-vault.ts -> createCryptoClient()')
+
     return new CryptographyClient(masterKey, this.credentials);
   }
 
   private parsePath(masterKeyPath: string): ParsedKeyPath {
+    console.log('> keystore-provider-azure-key-vault.ts -> parsePath()')
+
     if (!masterKeyPath || masterKeyPath.trim() === '') {
       throw new Error('Azure Key Vault key path cannot be null.');
     }
@@ -254,6 +267,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private async azureKeyVaultSignedHashedData(cryptoClient: CryptographyClient, dataToSign: Buffer): Promise<Buffer> {
+    console.log('> keystore-provider-azure-key-vault.ts -> azureKeyVaultSignedHashedData()')
+
     if (!cryptoClient) {
       throw new Error('Azure KVS Crypto Client is not defined.');
     }
@@ -264,6 +279,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private async azureKeyVaultWrap(cryptoClient: CryptographyClient, encryptionAlgorithm: string, columnEncryptionKey: Buffer): Promise<Buffer> {
+    console.log('> keystore-provider-azure-key-vault.ts -> azureKeyVaultWrap()')
+
     if (!cryptoClient) {
       throw new Error('Azure KVS Crypto Client is not defined.');
     }
@@ -278,6 +295,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private async azureKeyVaultUnWrap(cryptoClient: CryptographyClient, encryptionAlgorithm: string, encryptedColumnEncryptionKey: Buffer): Promise<Buffer> {
+    console.log('> keystore-provider-azure-key-vault.ts -> azureKeyVaultUnWrap()')
+
     if (!cryptoClient) {
       throw new Error('Azure KVS Crypto Client is not defined.');
     }
@@ -296,6 +315,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private getAKVKeySize(retrievedKey: KeyVaultKey): number {
+    console.log('> keystore-provider-azure-key-vault.ts -> getAKVKeySize()')
+
     const key = retrievedKey.key;
 
     if (!key) {
@@ -314,6 +335,8 @@ export class ColumnEncryptionAzureKeyVaultProvider {
   }
 
   private validateEncryptionAlgorithm(encryptionAlgorithm: string): string {
+    console.log('> keystore-provider-azure-key-vault.ts -> validateEncryptionAlgorithm()')
+
     if (!encryptionAlgorithm) {
       throw new Error('Key encryption algorithm cannot be null.');
     }

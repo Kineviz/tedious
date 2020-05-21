@@ -19,6 +19,8 @@ export class AeadAes256CbcHmac256Algorithm implements EncryptionAlgorithm {
   private minimumCipherTextLengthInBytesWithAuthenticationTag: number;
 
   constructor(columnEncryptionKey: AeadAes256CbcHmac256EncryptionKey, encryptionType: SQLServerEncryptionType) {
+    console.log('> aead-aes-256-cbc-hmac-algorithm.ts -> new AeadAes256CbcHmac256Algorithm()')
+
     this.keySizeInBytes = keySize / 8;
     this.version = Buffer.from([algorithmVersion]);
     this.versionSize = Buffer.from([1]);
@@ -30,6 +32,7 @@ export class AeadAes256CbcHmac256Algorithm implements EncryptionAlgorithm {
   }
 
   encryptData(plaintText: Buffer): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-algorithm.ts -> encryptData()')
     let iv: Buffer;
 
     if (this.isDeterministic === true) {
@@ -50,6 +53,7 @@ export class AeadAes256CbcHmac256Algorithm implements EncryptionAlgorithm {
   }
 
   decryptData(cipherText: Buffer): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-algorithm.ts -> decryptData()')
     const iv: Buffer = Buffer.alloc(blockSizeInBytes);
 
     const minimumCiperTextLength: number = this.minimumCipherTextLengthInBytesWithAuthenticationTag;
@@ -95,6 +99,7 @@ export class AeadAes256CbcHmac256Algorithm implements EncryptionAlgorithm {
   }
 
   _prepareAuthenticationTag(iv: Buffer, cipherText: Buffer, offset: number, length: number): Buffer {
+    console.log('> aead-aes-256-cbc-hmac-algorithm.ts -> _prepareAuthenticationTag()')
     const hmac = createHmac('sha256', this.columnEncryptionkey.getMacKey());
 
     hmac.update(this.version);

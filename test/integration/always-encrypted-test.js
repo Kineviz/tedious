@@ -5,15 +5,31 @@ const TYPES = require('../../src/data-type').typeByName;
 const fs = require('fs');
 const { assert } = require('chai');
 
-const config = JSON.parse(
+/* const config = JSON.parse(
   fs.readFileSync(require('os').homedir() + '/.tedious/test-connection.json', 'utf8')
-).config;
+).config; */
+
+var config = {
+  "server": "localhost",
+  "authentication": {
+    "type": "default",
+    "options": {
+      "userName": "sa",
+      "password": "Password1",
+    }
+  },
+  "options": {
+    "port": 1433,
+    "database": "master",
+    "columnEncryptionSetting": true,
+  }
+}
 
 config.options.debug = {
-  packet: true,
-  data: true,
-  payload: true,
-  token: true,
+  packet: false,
+  data: false,
+  payload: false,
+  token: false,
   log: true
 };
 config.options.columnEncryptionSetting = true;
@@ -95,67 +111,47 @@ describe('always encrypted', function () {
   beforeEach(function (done) {
     connection = new Connection(config);
     // connection.on('debug', (msg) => console.log(msg));
-    connection.on('connect', () => {
+    /* connection.on('connect', () => {
       dropKeys((err) => {
         if (err) {
           return done(err);
         }
         createKeys(done);
       });
+    }); */
+    connection.on('connect', () => {
+      const request = new Request('IF OBJECT_ID(\'dbo.test_always_encrypted\', \'U\') IS NOT NULL DROP TABLE dbo.test_always_encrypted;', (err) => {
+        if (err) {
+          return done(err);
+        }
+        
+        done();
+      });
+      connection.execSql(request);
     });
   });
 
   afterEach(function (done) {
+    // if (!connection.closed) {
+    //   /* dropKeys(() => {
+    //     connection.on('end', done);
+    //     connection.close();
+    //   }); */
+    // } else {
+    //   connection.close();
+    //   done();
+    // }
     if (!connection.closed) {
-      dropKeys(() => {
-        connection.on('end', done);
-        connection.close();
-      });
+      connection.on('end', done);
+      connection.close();
     } else {
       done();
     }
   });
 
-  xit('should correctly insert/select the encrypted data', function (done) {
+  it('should correctly insert/select the encrypted data', function (done) {
     const request = new Request(`CREATE TABLE test_always_encrypted (
-      [plaintext]  nvarchar(50),
-      [nvarchar_determ_test] nvarchar(50) COLLATE Latin1_General_BIN2 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = DETERMINISTIC,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
-      [nvarchar_rand_test] nvarchar(50) COLLATE Latin1_General_BIN2 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = RANDOMIZED,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
       [int_test] int 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = DETERMINISTIC,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
-      [date_test] date 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = DETERMINISTIC,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
-      [datetime_test] datetime 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = DETERMINISTIC,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
-      [datetime2_test] datetime2 
-      ENCRYPTED WITH (
-        ENCRYPTION_TYPE = DETERMINISTIC,
-        ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
-        COLUMN_ENCRYPTION_KEY = [CEK1]
-      ),
-      [datetimeoffset_test] datetimeoffset 
       ENCRYPTED WITH (
         ENCRYPTION_TYPE = DETERMINISTIC,
         ALGORITHM = 'AEAD_AES_256_CBC_HMAC_SHA_256',
@@ -165,26 +161,20 @@ describe('always encrypted', function () {
       if (err) {
         return done(err);
       }
-      const p1 = 'nvarchar_determ_test_val123';
-      const p2 = 'nvarchar_rand_test_val123';
+
       const p3 = 123;
-      const p4 = 'plaintext_val123';
-      const p5 = new Date(Date.UTC(2020, 0, 1, 0, 0, 0, 0));
-      const p6 = new Date(Date.UTC(2020, 0, 1, 1, 1, 1, 0));
-      const p7 = new Date(Date.UTC(2020, 0, 1, 1, 1, 1, 1));
-      const p8 = new Date(Date.UTC(2020, 0, 1, 1, 1, 1, 1));
-      const request = new Request('INSERT INTO test_always_encrypted ([nvarchar_determ_test], [nvarchar_rand_test], [int_test], [plaintext], [date_test], [datetime_test], [datetime2_test], [datetimeoffset_test]) VALUES (@p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)', (err) => {
+      const request = new Request('INSERT INTO test_always_encrypted ([int_test]) VALUES (@p3)', (err) => {
         if (err) {
           return done(err);
         }
         let values = [];
-        const request = new Request('SELECT TOP 1 [nvarchar_determ_test], [nvarchar_rand_test], [int_test], [plaintext], [date_test], [datetime_test], [datetime2_test], [datetimeoffset_test] FROM test_always_encrypted', (err) => {
+        const request = new Request('SELECT TOP 1 [int_test] FROM test_always_encrypted', (err) => {
           if (err) {
             return done(err);
           }
 
           try {
-            assert.deepEqual(values, [p1, p2, p3, p4, p5, p6, p7, p8]);
+            assert.deepEqual(values, [p3]);
           } catch (error) {
             return done(error);
           }
@@ -199,20 +189,13 @@ describe('always encrypted', function () {
         connection.execSql(request);
       });
 
-      request.addParameter('p1', TYPES.NVarChar, p1);
-      request.addParameter('p2', TYPES.NVarChar, p2);
       request.addParameter('p3', TYPES.Int, p3);
-      request.addParameter('p4', TYPES.NVarChar, p4);
-      request.addParameter('p5', TYPES.Date, p5);
-      request.addParameter('p6', TYPES.DateTime, p6);
-      request.addParameter('p7', TYPES.DateTime2, p7);
-      request.addParameter('p8', TYPES.DateTimeOffset, p8);
       connection.execSql(request);
     });
     connection.execSql(request);
   });
 
-  it('should bulkLoad AE', function (done) {
+  xit('should bulkLoad AE', function (done) {
     const bulkLoad = connection.newBulkLoad('test_always_encrypted', (err) => {
       if (err) {
         return done(err);
@@ -238,68 +221,18 @@ describe('always encrypted', function () {
         done(err);
       }
       console.log('done Request')
-      bulkLoad.addRow(1);
+      bulkLoad.addRow(2);
       connection.execBulkLoad(bulkLoad);
     })
     console.log(bulkLoad.getTableCreationSql());
 
-    connection.execSql(request);
+    connection.execSqlBatch(request);
 
     connection.on('infoMessage', infoError);
     connection.on('errorMessage', infoError);
     connection.on('debug', debug);
   })
 
-  xit('should bulk load', function(done) {
-    const bulkLoad = connection.newBulkLoad('#tmpTestTable', function(
-      err,
-      rowCount
-    ) {
-      if (err) {
-        return done(err);
-      }
-
-      assert.strictEqual(rowCount, 5, 'Incorrect number of rows inserted.');
-
-      done();
-    });
-
-    bulkLoad.addColumn('nnn', TYPES.Int, {
-      nullable: false
-    });
-    bulkLoad.addColumn('sss', TYPES.NVarChar, {
-      length: 50,
-      nullable: true
-    });
-    bulkLoad.addColumn('ddd', TYPES.DateTime, {
-      nullable: false
-    });
-    const request = new Request(bulkLoad.getTableCreationSql(), function(err) {
-      if (err) {
-        return done(err);
-      }
-
-      bulkLoad.addRow({
-        nnn: 201,
-        sss: 'one zero one',
-        ddd: new Date(1986, 6, 20)
-      });
-      bulkLoad.addRow([202, 'one zero two', new Date()]);
-      bulkLoad.addRow(203, 'one zero three', new Date(2013, 7, 12));
-      bulkLoad.addRow({
-        nnn: 204,
-        sss: 'one zero four',
-        ddd: new Date()
-      });
-      bulkLoad.addRow({
-        nnn: 205,
-        sss: 'one zero five',
-        ddd: new Date()
-      });
-      connection.execBulkLoad(bulkLoad);
-    });
-    connection.execSqlBatch(request);
-  });
 });
 
 function infoError(info) {

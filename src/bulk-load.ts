@@ -10,6 +10,7 @@ import { TYPE as PACKET_TYPE } from './packet';
 
 import { DataType, Parameter } from './data-type';
 import { RequestError } from './errors';
+import { ColumnMetadata } from './token/colmetadata-token-parser';
 
 const FLAGS = {
   nullable: 1 << 0,
@@ -89,9 +90,9 @@ class RowTransform extends Transform {
   }
 
   _transform(row: Array<any>, _encoding: string, callback: () => void) {
-    console.log('>>> transforming row ', row)
     if (!this.columnMetadataWritten) {
-      console.log('>>> this.push(', this.bulkLoad.getColMetaData(), ')')
+      const buf = this.bulkLoad.getColMetaData();
+      console.log('>> RAW: ', buf.toString('hex').match(/../g)!.join(' '));
       this.push(this.bulkLoad.getColMetaData());
       this.columnMetadataWritten = true;
     }
@@ -108,14 +109,15 @@ class RowTransform extends Transform {
         value: row[i]
       }, this.mainOptions, () => { });
     }
-
+    
+    console.log('>> RAW: ', buf.data.toString('hex').match(/../g)!.join(' '));
     this.push(buf.data);
 
+    this.push(row);
     process.nextTick(callback);
   }
 
   _flush(callback: () => void) {
-    console.log('>>> flushed!')
     this.push(this.bulkLoad.createDoneToken());
 
     process.nextTick(callback);
@@ -132,6 +134,7 @@ class BulkLoad extends EventEmitter {
   connection?: Connection;
   timeout?: number;
 
+  loRow: Array<any>;
   rows?: Array<any>;
   rst?: Array<any>;
   rowCount?: number;
@@ -145,18 +148,21 @@ class BulkLoad extends EventEmitter {
 
   columns: Array<Column>;
   columnsByName: { [name: string]: Column };
+  columnMetadata?: ColumnMetadata[];
+  columnMetadataAsBytes: Buffer | undefined;
 
   firstRowWritten: boolean;
   rowToPacketTransform: RowTransform;
 
   bulkOptions: InternalOptions;
 
+
   constructor(table: string, connectionOptions: InternalConnectionOptions, {
     checkConstraints = false,
     fireTriggers = false,
     keepNulls = false,
     lockTable = false,
-    alwaysEncryptedValueModification = false
+    alwaysEncryptedValueModification = false,
   }: Options, callback: Callback) {
     if (typeof checkConstraints !== 'boolean') {
       throw new TypeError('The "options.checkConstraints" property must be of type boolean.');
@@ -184,10 +190,12 @@ class BulkLoad extends EventEmitter {
     this.options = connectionOptions;
     this.callback = callback;
     this.columns = [];
+    this.columnMetadataAsBytes = undefined;
     this.columnsByName = {};
     this.firstRowWritten = false;
     this.streamingMode = false;
     this.EkValueCount = 0;
+    this.loRow = [];
 
     this.rowToPacketTransform = new RowTransform(this); // eslint-disable-line no-use-before-define
 
@@ -261,13 +269,23 @@ class BulkLoad extends EventEmitter {
 
     // write each column
     if (Array.isArray(row)) {
-      this.rowToPacketTransform.write(row);
+      // this.rowToPacketTransform.write(row);
+      this.loRow.push(row);
     } else {
       const object = row;
-      this.rowToPacketTransform.write(this.columns.map((column) => {
+      /* this.rowToPacketTransform.write(this.columns.map((column) => {
+        return object[column.objName];
+      })); */
+      this.loRow.push(this.columns.map((column) => {
         return object[column.objName];
       }));
     }
+  }
+
+  transformRows() {
+    this.loRow.forEach((row) => {
+      this.rowToPacketTransform.write(row);
+    })
   }
 
   getOptionsSql() {
@@ -309,11 +327,10 @@ class BulkLoad extends EventEmitter {
 
     sql += this.getOptionsSql();
     // return sql;
-    return 'insert bulk test_always_encrypted([int_test] varbinary(1))'
+    return 'insert bulk test_always_encrypted([test_int] varbinary(81))'
   }
 
   getTableCreationSql(): string {
-    console.log('>>> column: ', this.columns[0])
     let sql = 'CREATE TABLE ' + this.table + ' (\n';
     for (let i = 0, len = this.columns.length; i < len; i++) {
       const c = this.columns[i];
@@ -336,8 +353,6 @@ class BulkLoad extends EventEmitter {
 
       if (c.columnEncryptionKey) {
         this.EkValueCount += 1;
-      } else {
-        throw Error('No Column Encryption Key provided! Required for encrypted table.');
       }
 
       if (c.nullable !== undefined) {
@@ -349,69 +364,74 @@ class BulkLoad extends EventEmitter {
   }
 
   getColMetaData() {
-    //need a way to use: getParameterEncryptionMetadata() method
+    if (this.columnMetadataAsBytes) {
+      console.log("SENDING COLMETADATA: ", this.columnMetadataAsBytes)
+      return this.columnMetadataAsBytes;
+    } else {
+      //need a way to use: getParameterEncryptionMetadata() method
 
-    const tBuf = new WritableTrackingBuffer(100, null, true);
-    // TokenType
-    tBuf.writeUInt8(TOKEN_TYPE.COLMETADATA);
-    // Count
-    tBuf.writeUInt16LE(this.columns.length);
+      const tBuf = new WritableTrackingBuffer(100, null, true);
+      // TokenType
+      tBuf.writeUInt8(TOKEN_TYPE.COLMETADATA);
+      // Count
+      tBuf.writeUInt16LE(this.columns.length);
 
-    // CekTable (2.2.5.7):
+      // CekTable (2.2.5.7):
 
-    // EkValueCount (USHORT) [describes the number of cek entries]
-    // tBuf.writeUInt8(this.EkValueCount);
+      // EkValueCount (USHORT) [describes the number of cek entries]
+      // tBuf.writeUInt8(this.EkValueCount);
 
-    // *EK_INFO:
-    // EK_INFO = DatabaseId
-    //           CekId
-    //           CekVersion
-    //           CekMDVersion
-    //           Count
-    //           *EncryptionKeyValue
+      // *EK_INFO:
+      // EK_INFO = DatabaseId
+      //           CekId
+      //           CekVersion
+      //           CekMDVersion
+      //           Count
+      //           *EncryptionKeyValue
 
-    // DatabaseId = (ULONG) [A 4 byte integer value that represents the database ID where the column encryption key is stored.]
-    
-    // CekId = ULONG
-    // CekVersion = ULONG
-    // CekMDVersion = ULONGLONG
-    // Count = (BYTE) [The count of EncryptionKeyValue elements that are present in the message.]
+      // DatabaseId = (ULONG) [A 4 byte integer value that represents the database ID where the column encryption key is stored.]
 
-    // EncryptionKeyValue = EncryptedKey
-    //                      KeyStoreName
-    //                      KeyPath
-    //                      AsymmetricAlgo
-      
-    // EncryptedKey = US_VARBYTES
-    // KeyStoreName = B_VARCHAR
-    // KeyPath = US_VARCHAR
-    // AsymmetricAlgo = B_VARCHAR
+      // CekId = ULONG
+      // CekVersion = ULONG
+      // CekMDVersion = ULONGLONG
+      // Count = (BYTE) [The count of EncryptionKeyValue elements that are present in the message.]
 
-    for (let j = 0, len = this.columns.length; j < len; j++) {
-      const c = this.columns[j];
-      // UserType
-      if (this.options.tdsVersion < '7_2') {
-        tBuf.writeUInt16LE(0);
-      } else {
-        tBuf.writeUInt32LE(0);
+      // EncryptionKeyValue = EncryptedKey
+      //                      KeyStoreName
+      //                      KeyPath
+      //                      AsymmetricAlgo
+
+      // EncryptedKey = US_VARBYTES
+      // KeyStoreName = B_VARCHAR
+      // KeyPath = US_VARCHAR
+      // AsymmetricAlgo = B_VARCHAR
+
+      for (let j = 0, len = this.columns.length; j < len; j++) {
+        const c = this.columns[j];
+        // UserType
+        if (this.options.tdsVersion < '7_2') {
+          tBuf.writeUInt16LE(0);
+        } else {
+          tBuf.writeUInt32LE(0);
+        }
+
+        // Flags
+        let flags = FLAGS.updateableReadWrite;
+        if (c.nullable) {
+          flags |= FLAGS.nullable;
+        } else if (c.nullable === undefined && this.options.tdsVersion >= '7_2') {
+          flags |= FLAGS.nullableUnknown;
+        }
+        tBuf.writeUInt16LE(flags);
+
+        // TYPE_INFO
+        c.type.writeTypeInfo(tBuf, c, this.options);
+
+        // ColName
+        tBuf.writeBVarchar(c.name, 'ucs2');
       }
-
-      // Flags
-      let flags = FLAGS.updateableReadWrite;
-      if (c.nullable) {
-        flags |= FLAGS.nullable;
-      } else if (c.nullable === undefined && this.options.tdsVersion >= '7_2') {
-        flags |= FLAGS.nullableUnknown;
-      }
-      tBuf.writeUInt16LE(flags);
-
-      // TYPE_INFO
-      c.type.writeTypeInfo(tBuf, c, this.options);
-
-      // ColName
-      tBuf.writeBVarchar(c.name, 'ucs2');
+      return tBuf.data;
     }
-    return tBuf.data;
   }
 
   setTimeout(timeout?: number) {

@@ -44,6 +44,7 @@ class EndOfMessageMarker {}
 class Parser extends Transform {
   debug: Debug;
   colMetadata: ColumnMetadata[];
+  colMetadataAsBytes: Buffer | undefined;
   options: InternalConnectionOptions;
   endOfMessageMarker: EndOfMessageMarker;
 
@@ -58,6 +59,7 @@ class Parser extends Transform {
 
     this.debug = debug;
     this.colMetadata = colMetadata;
+    this.colMetadataAsBytes = undefined;
     this.options = options;
     this.endOfMessageMarker = new EndOfMessageMarker();
 
@@ -133,6 +135,7 @@ class Parser extends Transform {
       if (token) {
         if (token instanceof ColMetadataToken) {
           this.colMetadata = token.columns;
+          this.colMetadataAsBytes = token.colMetadataAsBytes;
         }
         this.debug.token(token);
         this.push(token);

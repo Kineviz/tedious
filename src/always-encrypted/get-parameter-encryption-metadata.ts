@@ -11,6 +11,7 @@ import RpcRequestPayload from '../rpcrequest-payload';
 import { TYPE } from '../packet';
 
 export const getParameterEncryptionMetadata = (connection: Connection, request: Request, callback: (error?: Error) => void) => {
+  console.log('> get-parameter-encryption-metadata.ts -> getParameterEncryptionMetadata()')
   if (request.cryptoMetadataLoaded === true) {
     return callback();
   }

@@ -343,6 +343,7 @@ class Connection extends EventEmitter {
   retryTimer: undefined | NodeJS.Timeout;
 
   constructor(config: ConnectionConfiguration) {
+    console.log('>>> config', config)
     super();
 
     if (typeof config !== 'object' || config === null) {
@@ -1256,6 +1257,7 @@ class Connection extends EventEmitter {
           } else {
             request.emit('columnMetadata', token.columns);
           }
+          request.emit('columnMetadataAsBytes', token.colMetadataAsBytes);
         }
       } else {
         this.emit('error', new Error("Received 'columnMetadata' when no sqlRequest is in progress"));
@@ -1859,6 +1861,7 @@ class Connection extends EventEmitter {
   }
 
   _execSql(request: Request) {
+    console.log('> conncetion.ts -> _execSql()')
     request.transformIntoExecuteSqlRpc();
 
     const error = request.error;
@@ -1874,6 +1877,7 @@ class Connection extends EventEmitter {
   }
 
   execSql(request: Request) {
+    console.log('> connection.ts -> execSql()')
     request.shouldHonorAE = shouldHonorAE(request.statementColumnEncryptionSetting, this.config.options.columnEncryptionSetting);
     if (request.shouldHonorAE && request.cryptoMetadataLoaded === false && (request.parameters && request.parameters.length > 0)) {
       getParameterEncryptionMetadata(this, request, (error?: Error) => {
@@ -1884,6 +1888,7 @@ class Connection extends EventEmitter {
           });
           return;
         }
+        console.log('> connection.ts -> getParameterEncryptionMetadata() DONE')
         this._execSql(request);
       });
     } else {
@@ -1926,19 +1931,52 @@ class Connection extends EventEmitter {
       this.execBulkLoadHelper(bulkLoad);
     }
   }
+  //
 
   execBulkLoadWithAE(bulkLoad: BulkLoad) {
-   /*  const request = new Request('exec [sys].sp_bcp_dbcmptlevel [master] set fmtonly on select * from test_always_encrypted set fmtonly off', (err) => {
-      console.log('>>> executing fmtonly request request')
+    console.log('>>. executing bulkLoad with AE')
+    bulkLoad.executionStarted = true;
+    const getMetadataReq = new Request(`Select top 1 * from ${bulkLoad.table}`, (err, rowCount) => {
       if (err) {
-        console.log(err);
+        throw new RequestError(`Unable to retrieve column metadata in BulkLoad Always Encrypted from table: ${bulkLoad.table}`);
       }
-      this.execBulkLoadHelper(bulkLoad);
-    })
-    
-    this.execSqlBatch(request); */
 
-    this.execBulkLoadHelper(bulkLoad);
+      const request = new Request(bulkLoad.getBulkInsertSql(), (error: (Error & { code?: string }) | null | undefined) => {
+        if (error) {
+          if (error.code === 'UNKNOWN') {
+            error.message += ' This is likely because the schema of the BulkLoad does not match the schema of the table you are attempting to insert into.';
+          }
+          bulkLoad.error = error; 
+          bulkLoad.callback(error);
+          return;
+        }
+
+        bulkLoad.transformRows();
+        
+        this.makeRequest(bulkLoad, TYPE.BULK_LOAD);
+      });
+
+      bulkLoad.once('cancel', () => {
+        request.cancel();
+      });
+
+      this.execSqlBatch(request);
+    });
+
+    getMetadataReq.on('columnMetadata', (colMetadata) => {
+      bulkLoad.columnMetadata = colMetadata;
+    })
+
+    getMetadataReq.on('columnMetadataAsBytes', (buffer) => {
+      console.log('>>> col metadataASBytes: ', buffer);
+      console.log('>>> col metadata: ', buffer);
+      const b = buffer.slice(0, buffer.length - 13);
+      console.log('> length: ', buffer.length);
+      console.log('>> SLICED: ', b.toString('hex').match(/../g)!.join(' '))
+      bulkLoad.columnMetadataAsBytes = b;
+    })
+
+    this.execSql(getMetadataReq);
   }
 
   execBulkLoadHelper(bulkLoad: BulkLoad) {
@@ -2184,6 +2222,7 @@ class Connection extends EventEmitter {
           this.pauseRequest(request);
         }
       } else {
+        console.log('> connection.ts -> makeRequest(RPCPayloud)')
         this.createRequestTimer();
 
         message = new Message({ type: packetType, resetConnection: this.resetConnectionOnNextRequest });

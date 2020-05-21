@@ -77,6 +77,7 @@ function readCryptoMetadataOrdinal(parser: Parser, cekList: CEKEntry[] | undefin
 
 function readCryptoMetadata(parser: Parser, metadata: Metadata, cekList: CEKEntry[] | undefined, options: InternalConnectionOptions, callback: (cryptoMetdata?: CryptoMetadata) => void) {
   if (options.serverSupportsColumnEncryption === true && 0x0800 === (metadata.flags & 0x0800)) {
+    console.log('>>> reading cryptometadata')
     readCryptoMetadataOrdinal(parser, cekList, (ordinal) => {
       metadataParse(parser, options, (metadata) => {
         parser.readUInt8((algorithmId) => {
@@ -147,6 +148,7 @@ function readColumn(parser: Parser, options: InternalConnectionOptions, index: n
 }
 
 function readCEKTable(parser: Parser, options: InternalConnectionOptions, callback: (cekList?: CEKEntry[]) => void) {
+  console.log('>> initialize cek table ')
   if (options.serverSupportsColumnEncryption === true) {
     parser.readUInt16LE((tableSize) => {
       if (tableSize > 0) {
@@ -239,6 +241,8 @@ function readCEKValue(parser: Parser, cekEntry: CEKEntry, cekTableEntryMetadata:
 }
 
 function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], options: InternalConnectionOptions, callback: (token: ColMetadataToken) => void) {
+  const startBuffers = parser.buffers[0].buffer;
+  console.log("> colmetadata-token-parser.ts -> colMetadataParser()" )
   parser.readUInt16LE((columnCount) => {
     readCEKTable(parser, options, (cekList?: CEKEntry[]) => {
       const columns: ColumnMetadata[] = [];
@@ -246,6 +250,8 @@ function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], optio
       let i = 0;
       function next(done: () => void) {
         if (i === columnCount) {
+          const doneBuffer = parser.buffers[0].buffer;
+          console.log('> colmetadata-token-parser.ts -> DONE')
           return done();
         }
 
@@ -258,7 +264,8 @@ function colMetadataParser(parser: Parser, _colMetadata: ColumnMetadata[], optio
       }
 
       next(() => {
-        callback(new ColMetadataToken(columns));
+        const colMetadataAsBytes = parser.buffers[0].buffer;
+        callback(new ColMetadataToken(columns, colMetadataAsBytes));
       });
     });
   });

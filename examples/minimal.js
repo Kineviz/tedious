@@ -2,28 +2,21 @@ var Connection = require('../lib/tedious').Connection;
 var Request = require('../lib/tedious').Request;
 
 var config = {
-  server: '192.168.1.212',
-  authentication: {
-    type: 'default',
-    options: {
-      userName: 'test',
-      password: 'test'
+  "server": "localhost",
+    "authentication": {
+    "type": "default",
+      "options": {
+      "userName": "sa",
+       "password": "Password1",
     }
-  }
-  /*
-  ,options: {
-    debug: {
-      packet: true,
-      data: true,
-      payload: true,
-      token: false,
-      log: true
-    },
-    database: 'DBName',
-    encrypt: true // for Azure users
-  }
-  */
-};
+  },
+    "options":{
+  "port": 1433,
+  "database": "master",
+  "columnEncryptionSetting": true,
+  "encrypt": false,
+}
+}
 
 var connection = new Connection(config);
 
@@ -39,7 +32,7 @@ connection.on('debug', function(text) {
 );
 
 function executeStatement() {
-  request = new Request("select 42, 'hello world'", function(err, rowCount) {
+  request = new Request("select top 1 * from test_always_encrypted", function(err, rowCount) {
     if (err) {
       console.log(err);
     } else {
@@ -58,6 +51,12 @@ function executeStatement() {
       }
     });
   });
+
+  request.on('columnMetadata', (columns) => {
+    columns.forEach((column) => {
+      console.log('>> ', column);
+    })
+  })
 
   request.on('done', function(rowCount, more) {
     console.log(rowCount + ' rows returned');

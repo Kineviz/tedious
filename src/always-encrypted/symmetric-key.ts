@@ -5,6 +5,7 @@ export class SymmetricKey {
   rootKey: Buffer;
 
   constructor(rootKey: Buffer) {
+    console.log('> symmetric-keys.ts -> new SymmetricKey()')
     if (!rootKey) {
       throw new Error('Column encryption key cannot be null.');
     } else if (0 === rootKey.length) {

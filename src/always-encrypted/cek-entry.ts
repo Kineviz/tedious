@@ -12,6 +12,7 @@ export class CEKEntry {
   cekMdVersion: Buffer;
 
   constructor(ordinalVal: number) {
+    console.log("> cek-entry.ts -> new CEKEntry()")
     this.ordinal = ordinalVal;
     this.databaseId = 0;
     this.cekId = 0;
@@ -21,6 +22,8 @@ export class CEKEntry {
   }
 
   add(encryptedKey: Buffer, dbId: number, keyId: number, keyVersion: number, mdVersion: Buffer, keyPath: string, keyStoreName: string, algorithmName: string): void {
+    console.log("> cek-entry.ts -> add()")
+
     const encryptionKey: EncryptionKeyInfo = {
       encryptedKey,
       dbId,

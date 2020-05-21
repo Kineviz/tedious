@@ -4,6 +4,7 @@
 import { SQLServerStatementColumnEncryptionSetting } from './types';
 
 export const shouldHonorAE = (stmtColumnEncryptionSetting: SQLServerStatementColumnEncryptionSetting, columnEncryptionSetting: boolean): boolean => {
+  console.log('> utils.ts -> shouldHonorAE()')
   switch (stmtColumnEncryptionSetting) {
     case SQLServerStatementColumnEncryptionSetting.Disabled:
     case SQLServerStatementColumnEncryptionSetting.ResultSetOnly:
