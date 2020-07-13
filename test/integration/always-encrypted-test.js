@@ -84,6 +84,7 @@ describe('always encrypted', function () {
   };
 
   const dropKeys = (cb) => {
+    console.log('>>> DROPPING KEYS')
     const request = new Request('IF OBJECT_ID(\'dbo.test_always_encrypted\', \'U\') IS NOT NULL DROP TABLE dbo.test_always_encrypted;', (err) => {
       if (err) {
         return cb(err);
@@ -110,16 +111,16 @@ describe('always encrypted', function () {
 
   beforeEach(function (done) {
     connection = new Connection(config);
-    // connection.on('debug', (msg) => console.log(msg));
-    /* connection.on('connect', () => {
+    connection.on('debug', (msg) => console.log(msg));
+    connection.on('connect', () => {
       dropKeys((err) => {
         if (err) {
           return done(err);
         }
         createKeys(done);
       });
-    }); */
-    connection.on('connect', () => {
+    });
+ /*    connection.on('connect', () => {
       const request = new Request('IF OBJECT_ID(\'dbo.test_always_encrypted\', \'U\') IS NOT NULL DROP TABLE dbo.test_always_encrypted;', (err) => {
         if (err) {
           return done(err);
@@ -128,17 +129,16 @@ describe('always encrypted', function () {
         done();
       });
       connection.execSql(request);
-    });
+    }); */
   });
 
   afterEach(function (done) {
     // if (!connection.closed) {
-    //   /* dropKeys(() => {
+    //   dropKeys(() => {
     //     connection.on('end', done);
     //     connection.close();
-    //   }); */
+    //   });
     // } else {
-    //   connection.close();
     //   done();
     // }
     if (!connection.closed) {
@@ -149,7 +149,7 @@ describe('always encrypted', function () {
     }
   });
 
-  it('should correctly insert/select the encrypted data', function (done) {
+  xit('should correctly insert/select the encrypted data', function (done) {
     const request = new Request(`CREATE TABLE test_always_encrypted (
       [int_test] int 
       ENCRYPTED WITH (
@@ -195,7 +195,7 @@ describe('always encrypted', function () {
     connection.execSql(request);
   });
 
-  xit('should bulkLoad AE', function (done) {
+  it('should bulkLoad AE', function (done) {
     const bulkLoad = connection.newBulkLoad('test_always_encrypted', (err) => {
       if (err) {
         return done(err);

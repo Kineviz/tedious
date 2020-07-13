@@ -113,13 +113,13 @@ class RowTransform extends Transform {
     console.log('>> RAW: ', buf.data.toString('hex').match(/../g)!.join(' '));
     this.push(buf.data);
 
-    this.push(row);
+    // this.push(row);
     process.nextTick(callback);
   }
 
   _flush(callback: () => void) {
     this.push(this.bulkLoad.createDoneToken());
-
+    console.log('__transform done');
     process.nextTick(callback);
   }
 }
@@ -283,9 +283,11 @@ class BulkLoad extends EventEmitter {
   }
 
   transformRows() {
+    console.log('>>> Transforming rows!!!', this.loRow)
     this.loRow.forEach((row) => {
       this.rowToPacketTransform.write(row);
     })
+    console.log('>> transform fn() done?')
   }
 
   getOptionsSql() {
@@ -365,8 +367,13 @@ class BulkLoad extends EventEmitter {
 
   getColMetaData() {
     if (this.columnMetadataAsBytes) {
-      console.log("SENDING COLMETADATA: ", this.columnMetadataAsBytes)
-      return this.columnMetadataAsBytes;
+      // console.log("SENDING COLMETADATA: ", this.columnMetadataAsBytes)
+      // return this.columnMetadataAsBytes;
+      let str = `81 01 00 01 00 09 00 00 00 03 00 00 00 01 00 00 
+      00 ab 9e f3 00 e9 ab 00 00 00 00 00 00 00 09 08 
+     a5 51 00 00 00 00 00 00 00 26 01 02 02 01 07 54
+       00 69 00 6e 00 79 00 69 00 6e 00 74 00`.replace(/\s/g, "");
+       return Buffer.from(str, 'hex');
     } else {
       //need a way to use: getParameterEncryptionMetadata() method
 
@@ -471,6 +478,7 @@ class BulkLoad extends EventEmitter {
     this.rowToPacketTransform.pipe(message);
 
     this.rowToPacketTransform.once('finish', () => {
+      console.log('>>>> bulk-load getMessageStream() --> FINISHED!!!')
       this.removeListener('cancel', onCancel);
     });
 

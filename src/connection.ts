@@ -1937,7 +1937,10 @@ class Connection extends EventEmitter {
     console.log('>>. executing bulkLoad with AE')
     bulkLoad.executionStarted = true;
     const getMetadataReq = new Request(`Select top 1 * from ${bulkLoad.table}`, (err, rowCount) => {
+    // const getMetadataReq = new Request(`sp_refresh_parameter_encryption`, (err, rowCount) => {
+
       if (err) {
+        console.log(err);
         throw new RequestError(`Unable to retrieve column metadata in BulkLoad Always Encrypted from table: ${bulkLoad.table}`);
       }
 
@@ -1952,6 +1955,7 @@ class Connection extends EventEmitter {
         }
 
         bulkLoad.transformRows();
+        console.log('>> done transforming rows');
         
         this.makeRequest(bulkLoad, TYPE.BULK_LOAD);
       });
@@ -1965,6 +1969,7 @@ class Connection extends EventEmitter {
 
     getMetadataReq.on('columnMetadata', (colMetadata) => {
       bulkLoad.columnMetadata = colMetadata;
+      console.log('!!!! colmetadata-> ', colMetadata)
     })
 
     getMetadataReq.on('columnMetadataAsBytes', (buffer) => {
@@ -1974,7 +1979,16 @@ class Connection extends EventEmitter {
       console.log('> length: ', buffer.length);
       console.log('>> SLICED: ', b.toString('hex').match(/../g)!.join(' '))
       bulkLoad.columnMetadataAsBytes = b;
-    })
+      // bulkLoad.columnMetadataAsBytes = Buffer.from('8101000100010000007400', 'hex');
+    });
+
+    getMetadataReq.on('row', (err, columns) => {
+      if(err) {
+        throw Error(err)
+      }
+      console.log('!!!!! COLUMNS ', columns)
+      
+    });
 
     this.execSql(getMetadataReq);
   }
@@ -2160,6 +2174,7 @@ class Connection extends EventEmitter {
   makeRequest(request: BulkLoad, packetType: number): void
   makeRequest(request: Request, packetType: number, payload: { getStream: () => Readable, toString: (indent?: string) => string }): void
   makeRequest(request: Request | BulkLoad, packetType: number, payload?: { getStream: () => Readable, toString: (indent?: string) => string }) {
+    console.log('> conncetion.ts MAKING REQUEST: ', request)
     if (this.state !== this.STATE.LOGGED_IN) {
       const message = 'Requests can only be made in the ' + this.STATE.LOGGED_IN.name + ' state, not the ' + this.state.name + ' state';
       this.debug.log(message);
@@ -2205,6 +2220,7 @@ class Connection extends EventEmitter {
       });
 
       if (request instanceof BulkLoad) {
+        console.log('> connection.ts -> request is instance of BulkLoad')
         message = request.getMessageStream();
 
         // If the bulkload was not put into streaming mode by the user,
@@ -2230,6 +2246,7 @@ class Connection extends EventEmitter {
         this.transitionTo(this.STATE.SENT_CLIENT_REQUEST);
 
         message.once('finish', () => {
+          console.log('connection.ts -> message finished!!')
           this.resetConnectionOnNextRequest = false;
           this.debug.payload(function () {
             return payload!.toString('  ');
