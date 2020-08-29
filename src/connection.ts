@@ -18,6 +18,10 @@ import {
   ApplicationTokenCredentials
 } from '@azure/ms-rest-nodeauth';
 
+import { ManagedIdentityCredential } from '@azure/identity'
+
+import {KeyClient} from '@azure/keyvault-keys'
+
 import BulkLoad, { Options as BulkLoadOptions, Callback as BulkLoadCallback } from './bulk-load';
 import Debug from './debug';
 import { EventEmitter } from 'events';
@@ -397,12 +401,12 @@ interface State {
 }
 
 type Authentication = DefaultAuthentication |
-                      NtlmAuthentication |
-                      AzureActiveDirectoryPasswordAuthentication |
-                      AzureActiveDirectoryMsiAppServiceAuthentication |
-                      AzureActiveDirectoryMsiVmAuthentication |
-                      AzureActiveDirectoryAccessTokenAuthentication |
-                      AzureActiveDirectoryServicePrincipalSecret;
+  NtlmAuthentication |
+  AzureActiveDirectoryPasswordAuthentication |
+  AzureActiveDirectoryMsiAppServiceAuthentication |
+  AzureActiveDirectoryMsiVmAuthentication |
+  AzureActiveDirectoryAccessTokenAuthentication |
+  AzureActiveDirectoryServicePrincipalSecret;
 
 type AuthenticationType = Authentication['type'];
 
@@ -446,7 +450,7 @@ interface DebugOptions {
    * (default: `false`)
    */
   token: boolean;
-  }
+}
 
 interface AuthenticationOptions {
   /**
@@ -455,19 +459,19 @@ interface AuthenticationOptions {
    * `azure-active-directory-msi-vm`, `azure-active-directory-msi-app-service`,
    * or `azure-active-directory-service-principal-secret`
    */
-   type?: AuthenticationType;
-   /**
-    * Different options for authentication types:
-    *
-    * * `default`: [[DefaultAuthentication.options]]
-    * * `ntlm` :[[NtlmAuthentication]]
-    * * `azure-active-directory-password` : [[AzureActiveDirectoryPasswordAuthentication.options]]
-    * * `azure-active-directory-access-token` : [[AzureActiveDirectoryAccessTokenAuthentication.options]]
-    * * `azure-active-directory-msi-vm` : [[AzureActiveDirectoryMsiVmAuthentication.options]]
-    * * `azure-active-directory-msi-app-service` : [[AzureActiveDirectoryMsiAppServiceAuthentication.options]]
-    * * `azure-active-directory-service-principal-secret` : [[AzureActiveDirectoryServicePrincipalSecret.options]]
-    */
-   options?: any;
+  type?: AuthenticationType;
+  /**
+   * Different options for authentication types:
+   *
+   * * `default`: [[DefaultAuthentication.options]]
+   * * `ntlm` :[[NtlmAuthentication]]
+   * * `azure-active-directory-password` : [[AzureActiveDirectoryPasswordAuthentication.options]]
+   * * `azure-active-directory-access-token` : [[AzureActiveDirectoryAccessTokenAuthentication.options]]
+   * * `azure-active-directory-msi-vm` : [[AzureActiveDirectoryMsiVmAuthentication.options]]
+   * * `azure-active-directory-msi-app-service` : [[AzureActiveDirectoryMsiAppServiceAuthentication.options]]
+   * * `azure-active-directory-service-principal-secret` : [[AzureActiveDirectoryServicePrincipalSecret.options]]
+   */
+  options?: any;
 }
 
 interface ConnectionOptions {
@@ -3526,14 +3530,26 @@ Connection.prototype.STATE = {
           const authentication = this.config.authentication as AzureActiveDirectoryPasswordAuthentication | AzureActiveDirectoryMsiVmAuthentication | AzureActiveDirectoryMsiAppServiceAuthentication | AzureActiveDirectoryServicePrincipalSecret;
 
           const getToken = (callback: (error: Error | null, token?: string) => void) => {
-            const getTokenFromCredentials = (err: Error | undefined, credentials?: UserTokenCredentials | MSIAppServiceTokenCredentials | MSIVmTokenCredentials | ApplicationTokenCredentials) => {
+            const getTokenFromCredentials = (err: Error | undefined, credentials?: UserTokenCredentials | MSIAppServiceTokenCredentials | MSIVmTokenCredentials | ApplicationTokenCredentials | ManagedIdentityCredential) => {
               if (err) {
+                console.log('!!!!!!!! getTokenFromCredentials ERROR: ', err)
                 return callback(err);
               }
 
-              credentials!.getToken().then((tokenResponse) => {
-                callback(null, tokenResponse.accessToken);
-              }, callback);
+              if (credentials instanceof ManagedIdentityCredential) {
+                console.log('!!!!!!! credentials is instanceof ManagedIdentityCredentials')
+                credentials!.getToken('https://database.windows.net/.default').then((tokenResponse) => {
+                  console.log('!!!!! TOKEN RESPONSE: ', tokenResponse)
+                  callback(null, tokenResponse!.token);
+                }).catch((err) => {
+                  console.log('!!!!! TOKEN RESPONSE ERROR', err);
+                  return callback(err);
+                });
+              } else {
+                credentials!.getToken().then((tokenResponse) => {
+                  callback(null, tokenResponse.accessToken);
+                }, callback);
+              }
             };
 
             if (authentication.type === 'azure-active-directory-password') {
@@ -3548,11 +3564,16 @@ Connection.prototype.STATE = {
                 resource: fedAuthInfoToken.spn
               }, getTokenFromCredentials);
             } else if (authentication.type === 'azure-active-directory-msi-app-service') {
-              loginWithAppServiceMSI({
-                msiEndpoint: authentication.options.msiEndpoint,
-                msiSecret: authentication.options.msiSecret,
-                resource: fedAuthInfoToken.spn
-              }, getTokenFromCredentials);
+              // loginWithAppServiceMSI({
+              //   msiEndpoint: authentication.options.msiEndpoint,
+              //   msiSecret: authentication.options.msiSecret,
+              //   resource: fedAuthInfoToken.spn
+              // }, getTokenFromCredentials);
+
+              const credentials = new ManagedIdentityCredential(authentication.options.clientId!)
+              console.log('!!!!!!!!! credentials: ', credentials)
+              getTokenFromCredentials(undefined, credentials);
+
             } else if (authentication.type === 'azure-active-directory-service-principal-secret') {
               loginWithServicePrincipalSecret(
                 authentication.options.clientId,

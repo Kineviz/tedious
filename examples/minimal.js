@@ -1,41 +1,45 @@
 var Connection = require('../lib/tedious').Connection;
 var Request = require('../lib/tedious').Request;
 
-var config = {
-  server: '192.168.1.212',
-  authentication: {
-    type: 'default',
-    options: {
-      userName: 'test',
-      password: 'test'
+
+const fs = require('fs');
+
+// const config = JSON.parse(
+//   fs.readFileSync(require('os').homedir() + '/.tedious/test-connection.json', 'utf8')
+// ).config;
+
+const config = {
+  "server": "tedious-sqlserver.database.windows.net",
+  "authentication": {
+    "type": "default",
+    "options": {
+      "userName": "TDSemTest",
+      "password": "25FZW6WbhcqqkpES"
     }
+  },
+  "options": {
+    "port": 1433,
+    "database": "master",
+    // "trustServerCertificate": true
   }
-  /*
-  ,options: {
-    debug: {
-      packet: true,
-      data: true,
-      payload: true,
-      token: false,
-      log: true
-    },
-    database: 'DBName',
-    encrypt: true // for Azure users
-  }
-  */
-};
+}
 
 var connection = new Connection(config);
 
 connection.connect(function(err) {
-    // If no error, then good to go...
+  // If no error, then good to go...
+  if (err) {
+    console.log(err);
+  } else {
     executeStatement();
   }
+
+}
 );
 
 connection.on('debug', function(text) {
-    //console.log(text);
-  }
+  //console.log(text);
+}
 );
 
 function executeStatement() {
