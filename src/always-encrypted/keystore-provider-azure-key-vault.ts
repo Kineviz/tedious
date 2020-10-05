@@ -33,7 +33,7 @@ export class ColumnEncryptionAzureKeyVaultProvider {
             trustedEndpoints.add("managedhsm.azure.cn");
             trustedEndpoints.add("managedhsm.usgovcloudapi.net");
             trustedEndpoints.add("managedhsm.microsoftazure.de");
-            
+
             TODO: Make these configurable
     */
     this.rsaEncryptionAlgorithmWithOAEPForAKV = 'RSA-OAEP';
