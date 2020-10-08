@@ -13,13 +13,13 @@ const DateTime: DataType = {
     return 'datetime';
   },
 
-  writeTypeInfo: function(buffer) {
-    buffer.writeUInt8(DateTimeN.id);
-    buffer.writeUInt8(8);
+  generateTypeInfo() {
+    return Buffer.from([DateTimeN.id, 0x08]);
   },
 
-  // ParameterData<any> is temporary solution. TODO: need to understand what type ParameterData<...> can be.
-  writeParameterData: function(buffer, { value }, options, cb) {
+  generateParameterData: function*(parameter, options) {
+    const value = parameter.value as any; // Temporary solution. Remove 'any' later.
+
     if (value != null) {
       let date;
       if (options.useUTC) {
@@ -52,13 +52,14 @@ const DateTime: DataType = {
         threeHundredthsOfSecond = 0;
       }
 
-      buffer.writeUInt8(8);
-      buffer.writeInt32LE(days);
-      buffer.writeUInt32LE(threeHundredthsOfSecond);
+      const buffer = Buffer.alloc(9);
+      buffer.writeUInt8(8, 0);
+      buffer.writeInt32LE(days, 1);
+      buffer.writeUInt32LE(threeHundredthsOfSecond, 5);
+      yield buffer;
     } else {
-      buffer.writeUInt8(0);
+      yield Buffer.from([0x00]);
     }
-    cb();
   },
 
   // TODO: type 'any' needs to be revisited.
