@@ -12,7 +12,9 @@
     "Phil Dodderidge <pdodde@poyntz.com>",
     "Zach Aller"
   ],
-  "name": "tedious",
+  "name": "@lixuanxian/tedious",
+  "version": "1.0.0",
+  "private": false,
   "description": "A TDS driver, for connecting to MS SQLServer databases.",
   "keywords": [
     "sql",
@@ -27,7 +29,6 @@
   "homepage": "https://github.com/tediousjs/tedious",
   "bugs": "https://github.com/tediousjs/tedious/issues",
   "license": "MIT",
-  "version": "0.0.0-dev",
   "main": "./lib/tedious.js",
   "repository": {
     "type": "git",
@@ -96,9 +97,10 @@
     "test": "mocha 'test/unit/**/*.{ts,js}'",
     "test-integration": "mocha 'test/integration/**/*.{ts,js}'",
     "test-all": "mocha 'test/**/*.{ts,js}'",
-    "build": "rimraf lib && babel src --out-dir lib --extensions .js,.ts",
+    "build": "rimraf.cmd lib && babel.cmd src --out-dir lib --extensions .js,.ts",
     "prepublish": "npm run build",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "release": "npm publish --registry=https://registry.npmjs.org/ --access public"
   },
   "babel": {
     "ignore": [
